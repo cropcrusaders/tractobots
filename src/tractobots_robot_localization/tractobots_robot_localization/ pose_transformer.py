@@ -1,44 +1,66 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+"""
+Periodically publish the origin of `from_frame` expressed in `to_frame`.
 
-import rospy
-import tf
-import tf2_ros
-import tf2_geometry_msgs
+Parameters:
+  • from_frame (default 'base_link')
+  • to_frame   (default 'utm')
+"""
 from geometry_msgs.msg import PoseStamped
+import rclpy
+from rclpy.node import Node
+import tf2_ros
+from tf2_geometry_msgs import do_transform_pose
 
-class PoseTransformer:
 
-    def __init__(self, from_frame, to_frame):
+class PoseTransformer(Node):
+    def __init__(self):
+        super().__init__("pose_transformer")
 
-        pose_stamped = PoseStamped()
-        pose_stamped.header.frame_id = from_frame
-        pose_stamped.header.stamp = rospy.Time.now()
+        self.declare_parameter("from_frame", "base_link")
+        self.declare_parameter("to_frame", "utm")
+        self.from_frame = self.get_parameter("from_frame").value
+        self.to_frame = self.get_parameter("to_frame").value
 
-        tf_buffer = tf2_ros.Buffer(rospy.Duration(1.0))  # tf buffer length
-        tf_listener = tf2_ros.TransformListener(tf_buffer)
+        self.pub = self.create_publisher(PoseStamped, "transformed_pose", 10)
 
-        while not rospy.is_shutdown():
-            try:
-                rospy.sleep(0.1)
-                transform = tf_buffer.lookup_transform(to_frame,
-                                                       from_frame,  # source frame
-                                                       rospy.Time(0),  # get the tf at first available time
-                                                       rospy.Duration(0.1))  # wait for 1 second
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
-                pose_transformed = tf2_geometry_msgs.do_transform_pose(pose_stamped, transform)
+        # publish at 10 Hz
+        self.timer = self.create_timer(0.1, self.handle)
 
-                pose_pub.publish(pose_transformed)
+    # ──────────────────────────────────
+    def handle(self):
+        try:
+            trans = self.tf_buffer.lookup_transform(
+                self.to_frame, self.from_frame, rclpy.time.Time())
+        except (tf2_ros.LookupException,
+                tf2_ros.ConnectivityException,
+                tf2_ros.ExtrapolationException):
+            return
 
-            except Exception as e:
-                rospy.logwarn(e)
-                continue
+        pose_in = PoseStamped()
+        pose_in.header.frame_id = self.from_frame
+        pose_in.header.stamp = self.get_clock().now().to_msg()
+        pose_in.pose.orientation.w = 1.0  # identity
 
-if __name__ == '__main__':
-    rospy.init_node('pose_transformer')
-    from_frame = rospy.get_param('~from_frame')
-    to_frame = rospy.get_param('~to_frame')
-    pose_pub = rospy.Publisher('pose_example_publisher', PoseStamped, queue_size=10)
-    ptf = PoseTransformer(from_frame, to_frame)
-    rospy.loginfo("Transforming pose from frame: %s to frame: %s" % (from_frame, to_frame))
+        pose_out = do_transform_pose(pose_in, trans)
+        pose_out.header.frame_id = self.to_frame
+        self.pub.publish(pose_out)
 
-    rospy.spin()
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = PoseTransformer()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()
