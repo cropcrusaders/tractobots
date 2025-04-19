@@ -1,15 +1,26 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>tractobots_gps</name>
   <version>0.0.1</version>
   <description>
-  The tractobots_gps package is used for controlling a gps receiver module.
+    The tractobots_gps package provides a ROS 2 interface for the NV08C GPS receiver.
   </description>
 
-  <author>Kyler Laird</author>
   <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
-  <url type="repository">https://github.com/kylerlaird/tractobots.git</url>
   <license>GPLv3</license>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <!-- Use ament_python since this is a Python-based node -->
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- Runtime dependencies -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <!-- Linting and test dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
 </package>
