@@ -8,9 +8,10 @@ Field robots for precision agriculture — now super‑powered on **ROS 2 (Humb
 
 - **ROS 2-native**: Fully ported to ROS 2 with `colcon` builds & Python‑launch scripts  
 - **High‑precision INS support**: Plug in an Advanced Navigation INS for RTK‑level, fused GPS + IMU data  
-- **Modular “bringup”**: One-line launch of your entire stack—sensors, state estimation, teleop & autonomy  
+- **Modular “bringup”**: One‑line launch of your entire stack—sensors, state estimation, teleop & autonomy  
 - **MapViz integration**: Offline Google Maps + live pose/TF visualization  
 - **Row-by-Row Guidance**: Precise A–B line following for autonomous pass‑by‑pass tractor operation  
+- **ISOBUS Watchdog Node**: New C++ node using AgIsoStack++ to monitor engine oil pressure, fuel pressure, coolant temp, and fuel level with auto cut‑out and emergency‑stop  
 
 ---
 
@@ -36,9 +37,17 @@ sudo rosdep init
 rosdep update
 ```
 
----
+### 2. SocketCAN & CAN‑utils
 
-### 2. Docker (Optional)
+We use SocketCAN to interface with your ISOBUS/CAN hardware:
+
+```bash
+sudo apt install -y can-utils
+# Bring up your CAN interface (adjust 'can0' and bitrate as needed)
+sudo ip link set can0 up type can bitrate 250000
+```
+
+### 3. Docker (Optional)
 
 Run Daniel Snider’s MapProxy for offline Google/Satellite tiles:
 
@@ -60,7 +69,7 @@ MapViz can now point at `http://localhost:8080/services/tile.xml`.
     cd ~/ros2_tractobots
     ```
 
-2. **Clone your Tractobots packages + INS driver**
+2. **Clone all Tractobots packages + drivers**
 
     ```bash
     cd src
@@ -70,15 +79,19 @@ MapViz can now point at `http://localhost:8080/services/tile.xml`.
     git clone https://github.com/kylerlaird/tractobots_navigation.git
     git clone https://github.com/kylerlaird/tractobots_launchers.git
     git clone https://github.com/advanced-navigation/ros2-driver.git
+    git clone https://github.com/kylerlaird/iso_bus_watchdog.git
     cd ~/ros2_tractobots
     ```
 
-3. **Install all dependencies**
+3. **Install dependencies**
 
     ```bash
     # System packages for INS driver + numpy + nvector
     sudo apt install -y python3-serial python3-numpy python3-nvector
     pip3 install pynmea2
+
+    # SocketCAN tools
+    sudo apt install -y can-utils
 
     # ROS package dependencies
     rosdep install --from-paths src --ignore-src -r -y
@@ -95,7 +108,7 @@ MapViz can now point at `http://localhost:8080/services/tile.xml`.
 
 ## 🚀 Usage
 
-Open **four** terminals, each sourcing your workspace:
+Open **five** terminals, each sourcing your workspace:
 
 ```bash
 source ~/ros2_tractobots/install/setup.bash
@@ -107,12 +120,12 @@ source ~/ros2_tractobots/install/setup.bash
 ros2 launch tractobots_launchers bringup.launch.py
 ```
 
-This starts:
+Starts:
 
-- **robot_state_publisher** (URDF TF tree)  
-- **gps_parser**, **imu_publisher** (legacy)  
-- **advanced_navigation_driver** (INS)  
-- **navsat_transform_node** & **ekf_node** → fused `/odometry/filtered`
+- `robot_state_publisher` (URDF TF tree)  
+- `gps_parser`, `imu_publisher` (legacy)  
+- `advanced_navigation_driver` (INS)  
+- `navsat_transform_node` & `ekf_node` → fused `/odometry/filtered`
 
 ### 2. Tele‑op & Driver
 
@@ -121,12 +134,12 @@ ros2 run joy joy_node
 ros2 run tractobots_navigation driver
 ```
 
-Use your joystick to:
+Joystick controls:
 
 - **Enable/Disable** engine (Start/Back buttons)  
 - **Steer** with left stick, **Throttle** with triggers  
 - **Hitch Up/Down** with right stick Y  
-- **Nav‑mode** (hold Nav button + A/B/X/Y) for line‑following
+- **Nav‑mode** (hold Nav + A/B/X/Y) for line‑following
 
 ### 3. MapViz Visualization
 
@@ -145,27 +158,40 @@ ros2 launch tractobots_launchers pose_tf.launch.py
 
 Broadcasts `base_link → utm` TF for georeferenced transforms.
 
----
+### 5. ISOBUS Watchdog Node
 
-## 🌾 Row‑by‑Row (Pass‑by‑Pass) Guidance
+Monitor engine vitals and trigger emergency‑stop:
+
+```bash
+# bring up CAN interface if not already done
+sudo ip link set can0 up type can bitrate 250000
+
+# run the node (with optional threshold overrides)
+ros2 run iso_bus_watchdog iso_bus_watchdog_node   --ros-args     -p oil_pressure_min:=150.0     -p oil_pressure_max:=700.0     -p coolant_temp_min:=0.0     -p coolant_temp_max:=90.0     -p fuel_level_min:=10.0     -p fuel_level_max:=90.0
+```
+
+Published topics:
+
+- `/engine/oil_pressure` (kPa)  
+- `/engine/fuel_pressure` (kPa)  
+- `/engine/coolant_temp` (°C)  
+- `/engine/fuel_level` ( %)  
+- `/emergency_stop` (Bool)
+
+### 6. Row‑by‑Row (Pass‑by‑Pass) Guidance
 
 1. **Record A–B line**: In your driver, hold Nav + Y to start “north” line at current GPS.  
-2. **Follow**: The **Line Follower** algorithm computes cross‑track error and steers accordingly.  
-3. **Repeat**: At end‑of‑row (detected by distance or geofence), manually switch row or extend logic for autonomous headland turn.
-
-For advanced AB‑line management and Pure Pursuit steering, consider adding a **Pure Pursuit** ROS 2 node that subscribes to `/odometry/filtered` and your waypoint list, outputting steering angles to `/navigation/steering_pid/command`.
+2. **Follow**: The Line Follower algorithm computes cross‑track error and steers accordingly.  
+3. **Repeat**: At end‑of‑row, manually switch row or extend logic for auto headland turns.
 
 ---
 
 ## 📈 Continuous Integration (GitHub Actions)
 
-A CI workflow (`.github/workflows/ros2-ci.yml`) is included to:
+A CI workflow (`.github/workflows/ros2-ci.yml`) now also builds & lint‑tests:
 
-- **Checkout** submodules (driver & Tractobots code)  
-- **Install** all apt & pip deps  
-- **Build & test** every package on Ubuntu latest  
-
-Your PRs will automatically verify build health across ROS 2 Kinetic → Humble transitions!
+- `iso_bus_watchdog` alongside the other packages  
+- SocketCAN integration checks on Ubuntu 22.04 & Humble
 
 ---
 
