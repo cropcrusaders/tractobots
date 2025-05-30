@@ -49,7 +49,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y ros-humble-ros-base
-          echo "source /opt/ros/humble/setup.bash" >> $GITHUB_ENV
           # ★ Codex-edit
 
       # 6. Build the workspace
