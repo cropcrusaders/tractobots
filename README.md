@@ -213,6 +213,12 @@ Example step:
     required-ros-distributions: humble
 ```
 
+## 🤖 Codex Quickstart
+
+For a short overview of how to build and test Tractobots in automated setups,
+see [docs/CODEX_GUIDE.md](docs/CODEX_GUIDE.md). It lists the basic steps to
+install ROS 2, build the workspace with `colcon`, and run unit tests.
+
 ---
 
 ## 📝 License
