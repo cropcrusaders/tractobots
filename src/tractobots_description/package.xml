@@ -13,7 +13,7 @@
   <url type="repository">https://github.com/cropcrusaders/tractobots.git</url>
   <license>GPLv3</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend> <!-- ★ Codex-edit -->
 
   <export>
     <build_type>ament_cmake</build_type>

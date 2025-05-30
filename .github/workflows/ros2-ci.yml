@@ -44,12 +44,21 @@ jobs:
           rosdep update
           rosdep install --from-paths src --ignore-src -r -y
 
-      # 5. Build the workspace
+      # 5. Prepare build environment
+      - name: Install ros-base and setup
+        run: |
+          sudo apt update
+          sudo apt install -y ros-humble-ros-base
+          echo "source /opt/ros/humble/setup.bash" >> $GITHUB_ENV
+          # ★ Codex-edit
+
+      # 6. Build the workspace
       - name: Colcon build
         run: |
+          source /opt/ros/humble/setup.bash
           colcon build --symlink-install
-
-      # 6. Run tests and report results
+          # ★ Codex-edit
+      # 7. Run tests and report results
       - name: Colcon test
         run: |
           colcon test --event-handlers console_direct+
