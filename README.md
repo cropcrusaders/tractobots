@@ -30,6 +30,12 @@ sudo apt update
 sudo apt install -y ros-humble-desktop   python3-colcon-common-extensions python3-rosdep2 python3-pip
 ```
 
+You can also run the provided helper script for a non-interactive setup:
+
+```bash
+./install_ros2_humble.sh
+```
+
 Initialize **rosdep** (first time only):
 
 ```bash
