@@ -14,6 +14,7 @@ find_package(geometry_msgs REQUIRED)
 add_executable(gcode_reader_node
   Src/gcode_reader_node.cpp
   Src/gcode_parser.cpp
+  Src/coordinate_conversion.cpp
 )
 
 target_include_directories(gcode_reader_node PUBLIC
@@ -46,6 +47,14 @@ if(BUILD_TESTING)
   )
   target_compile_definitions(gcode_parser_test PRIVATE
     TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/data"
+  )
+
+  ament_add_gtest(coordinate_conversion_test
+    tests/test_coordinate_conversion.cpp
+    Src/coordinate_conversion.cpp
+  )
+  target_include_directories(coordinate_conversion_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include
   )
 endif()
 

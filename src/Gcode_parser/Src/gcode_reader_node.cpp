@@ -1,10 +1,16 @@
 #include "gcode_reader_node.hpp"
+#include "coordinate_conversion.h"
 
 GCodeReaderNode::GCodeReaderNode()
     : Node("gcode_reader_node")
 {
     declare_parameter<std::string>("gcode_file", "/home/your/path/file.gcode");
+    declare_parameter<double>("origin_lat", 0.0);
+    declare_parameter<double>("origin_lon", 0.0);
+
     get_parameter("gcode_file", gcode_file_path_);
+    get_parameter("origin_lat", origin_lat_);
+    get_parameter("origin_lon", origin_lon_);
 
     path_pub_ = create_publisher<nav_msgs::msg::Path>("gcode_path", 10);
     loadGCodeAndPublish();
@@ -21,8 +27,10 @@ void GCodeReaderNode::loadGCodeAndPublish() {
     for (const auto& cmd : commands) {
         geometry_msgs::msg::PoseStamped pose;
         pose.header = path_msg.header;
-        pose.pose.position.x = cmd.longitude;
-        pose.pose.position.y = cmd.latitude;
+        auto enu = coordinate_conversion::latLonToLocal(
+            cmd.latitude, cmd.longitude, origin_lat_, origin_lon_);
+        pose.pose.position.x = enu.east;
+        pose.pose.position.y = enu.north;
         pose.pose.position.z = cmd.altitude;
         pose.pose.orientation.w = 1.0;
         path_msg.poses.push_back(pose);

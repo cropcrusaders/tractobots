@@ -21,7 +21,7 @@ This README outlines a complete plan to evolve Tractobots into a **fully autonom
 ### Tasks:
 
 - [x] **G-code Reader Node**: Parse GPS-based G-code into `nav_msgs/Path`
-- [ ] **Coordinate Conversion**: Convert lat/lon → UTM (or local ENU frame)
+- [x] **Coordinate Conversion**: Convert lat/lon → UTM (or local ENU frame)
 - [ ] **Nav2 Integration**:
   - Publish waypoints to Nav2's `/goal_pose` or use `FollowPath`
   - Trigger mission start via joystick or UI
@@ -108,7 +108,7 @@ This README outlines a complete plan to evolve Tractobots into a **fully autonom
 
 | Node Name               | Function                                     |
 |------------------------|----------------------------------------------|
-| `gcode_reader_node`    | Parses GPS waypoints from G-code             |
+| `gcode_reader_node`    | Parses GPS waypoints from G-code and publishes a local ENU path |
 | `follow_gcode_node`    | Converts waypoints → Nav2 missions           |
 | `isobus_steering_node` | Sends ISOBUS messages to control steering    |
 | `tool_control_node`    | Toggles implement tools from Z commands      |
