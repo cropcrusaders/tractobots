@@ -62,29 +62,19 @@ MapViz can now point at `http://localhost:8080/services/tile.xml`.
 
 ## 📥 Clone & Build
 
-1. **Create your ROS 2 workspace**
+1. **Create your ROS 2 workspace and clone this repo**
 
     ```bash
     mkdir -p ~/ros2_tractobots/src
+    cd ~/ros2_tractobots/src
+    git clone https://github.com/cropcrusaders/tractobots.git
     cd ~/ros2_tractobots
     ```
 
-2. **Clone all Tractobots packages + drivers**
+    This single repository already contains all Tractobots packages and
+    drivers, including the Advanced Navigation INS driver and AgIsoStack++.
 
-    ```bash
-    cd src
-    git clone https://github.com/kylerlaird/tractobots_description.git
-    git clone https://github.com/kylerlaird/tractobots_gps.git
-    git clone https://github.com/kylerlaird/tractobots_robot_localization.git
-    git clone https://github.com/kylerlaird/tractobots_navigation.git
-    git clone https://github.com/kylerlaird/tractobots_launchers.git
-    git clone https://github.com/advanced-navigation/ros2-driver.git
-    git clone https://github.com/Open-Agriculture/AgIsoStack-plus-plus.git
-    git clone https://github.com/kylerlaird/iso_bus_watchdog.git
-    cd ~/ros2_tractobots
-    ```
-
-3. **Install dependencies**
+2. **Install dependencies**
 
     ```bash
     # System packages for INS driver + numpy + nvector
@@ -98,7 +88,7 @@ MapViz can now point at `http://localhost:8080/services/tile.xml`.
     rosdep install --from-paths src --ignore-src -r -y
     ```
 
-4. **Build & source**
+3. **Build & source**
 
     ```bash
     colcon build --symlink-install
