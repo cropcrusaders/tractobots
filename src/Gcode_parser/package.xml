@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>gcode_parser</name>
+  <version>0.1.0</version>
+  <description>G-code parser library and reader node.</description>
+  <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
+  <license>GPLv3</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
