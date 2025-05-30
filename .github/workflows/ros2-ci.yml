@@ -16,7 +16,7 @@ jobs:
 
       # 2. Install ROS 2 (Humble)
       - name: Setup ROS 2
-        uses: ros-tooling/setup-ros@v0.2
+        uses: ros-tooling/setup-ros@v0.7.12
         with:
           required-ros-distributions: humble
 
