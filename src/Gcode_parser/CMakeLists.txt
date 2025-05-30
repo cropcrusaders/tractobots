@@ -35,4 +35,18 @@ install(DIRECTORY Include/
   DESTINATION include
 )
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(gcode_parser_test
+    tests/test_gcode_parser.cpp
+    Src/gcode_parser.cpp
+  )
+  target_include_directories(gcode_parser_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include
+  )
+  target_compile_definitions(gcode_parser_test PRIVATE
+    TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/data"
+  )
+endif()
+
 ament_package()
