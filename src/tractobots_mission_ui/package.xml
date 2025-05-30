@@ -1,0 +1,20 @@
+<package format="3">
+  <name>tractobots_mission_ui</name>
+  <version>0.0.1</version>
+  <description>Simple web-based mission control interface for Tractobots</description>
+
+  <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
+  <license>GPLv3</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -73,7 +73,7 @@ This README outlines a complete plan to evolve Tractobots into a **fully autonom
 
 ### Tasks:
 
-- [ ] **Mission Start/Stop** buttons
+- [x] **Mission Start/Stop** buttons
 - [ ] G-code upload + preview
 - [ ] Path visualization (from `/gcode_path`)
 - [ ] Emergency stop toggle
