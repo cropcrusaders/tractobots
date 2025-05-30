@@ -1,0 +1,31 @@
+name: Arduino CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Arduino-*/*.ino'
+      - '.github/workflows/arduino-ci.yml'
+  pull_request:
+    paths:
+      - 'Arduino-*/*.ino'
+      - '.github/workflows/arduino-ci.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+
+      - name: Install Arduino AVR core
+        run: arduino-cli core install arduino:avr
+
+      - name: Compile JD6330 sketch
+        run: arduino-cli compile --fqbn arduino:avr:uno Arduino-JD6330/Arduino-JD6330.ino
+
+      - name: Compile MT765 sketch
+        run: arduino-cli compile --fqbn arduino:avr:uno Arduino-MT765/Arduino-MT765.ino
