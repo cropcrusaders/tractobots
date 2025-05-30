@@ -197,4 +197,4 @@ A CI workflow (`.github/workflows/ros2-ci.yml`) now also builds & lint‑tests:
 
 ## 📝 License
 
-**GPL v3**. See [LICENSE](LICENSE).
+This project is released under the **Autonomous Tractor Software License (ATSL) 1.0**. See [LICENSE](LICENSE) for details.
