@@ -27,4 +27,9 @@ install(TARGETS iso_bus_watchdog_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+) # ★ Codex-edit
+
 ament_package()
