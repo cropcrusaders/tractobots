@@ -6,7 +6,8 @@ package_name = 'tractobots_robot_localization'
 setup(
     name=package_name,
     version='0.0.1',
-    packages=[package_name],  # the Python module directory
+    # Directory containing gps_parser, imu_publisher and pose_transformer modules
+    packages=[package_name],
     data_files=[
         # ament index
         ('share/ament_index/resource_index/packages',
