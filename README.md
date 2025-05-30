@@ -198,3 +198,6 @@ A CI workflow (`.github/workflows/ros2-ci.yml`) now also builds & lint‑tests:
 ## 📝 License
 
 This project is released under the **Autonomous Tractor Software License (ATSL) 1.0**. See [LICENSE](LICENSE) for details.
+
+`iso_bus_watchdog` is an exception and continues to be distributed under the MIT
+license in order to remain compatible with the upstream AgIsoStack++ project.
