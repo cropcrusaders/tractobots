@@ -22,6 +22,8 @@ class MissionUINode(Node):
 
         # Publisher for mission start/stop commands
         self.mission_pub = self.create_publisher(Bool, '/mission/start', 1)
+        # Publisher for emergency stop toggle
+        self.emergency_pub = self.create_publisher(Bool, '/emergency_stop', 1)
 
         # Start HTTP server in background
         server_address = ('0.0.0.0', 8088)
@@ -54,6 +56,10 @@ class MissionUINode(Node):
                     "<button type='submit'>Start Mission</button></form>"
                     "<form method='post' action='/stop'>"
                     "<button type='submit'>Stop Mission</button></form>"
+                    "<form method='post' action='/estop'>"
+                    "<button type='submit'>Emergency Stop</button></form>"
+                    "<form method='post' action='/reset'>"
+                    "<button type='submit'>Reset E-Stop</button></form>"
                     "</body></html>"
                 )
                 self._send_html(html)
@@ -65,6 +71,12 @@ class MissionUINode(Node):
                 elif self.path == '/stop':
                     node.mission_pub.publish(Bool(data=False))
                     node.get_logger().info('Mission stop requested via UI')
+                elif self.path == '/estop':
+                    node.emergency_pub.publish(Bool(data=True))
+                    node.get_logger().warn('Emergency stop triggered via UI')
+                elif self.path == '/reset':
+                    node.emergency_pub.publish(Bool(data=False))
+                    node.get_logger().info('Emergency stop cleared via UI')
                 else:
                     self.send_error(404)
                     return
