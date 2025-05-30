@@ -14,4 +14,6 @@ private:
     void loadGCodeAndPublish();
 
     std::string gcode_file_path_;
+    double origin_lat_ = 0.0;
+    double origin_lon_ = 0.0;
 };
