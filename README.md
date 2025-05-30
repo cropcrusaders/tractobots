@@ -191,8 +191,18 @@ Published topics:
 
 A CI workflow (`.github/workflows/ros2-ci.yml`) now also builds & lint‑tests:
 
-- `iso_bus_watchdog` alongside the other packages  
+- `iso_bus_watchdog` alongside the other packages
 - SocketCAN integration checks on Ubuntu 22.04 & Humble
+- Uses `ros-tooling/setup-ros@v0.7.12` so `apt-get update` works with the current ROS key
+
+Example step:
+
+```yaml
+- name: Setup ROS 2
+  uses: ros-tooling/setup-ros@v0.7.12
+  with:
+    required-ros-distributions: humble
+```
 
 ---
 
