@@ -79,6 +79,7 @@ MapViz can now point at `http://localhost:8080/services/tile.xml`.
     git clone https://github.com/kylerlaird/tractobots_navigation.git
     git clone https://github.com/kylerlaird/tractobots_launchers.git
     git clone https://github.com/advanced-navigation/ros2-driver.git
+    git clone https://github.com/Open-Agriculture/AgIsoStack-plus-plus.git
     git clone https://github.com/kylerlaird/iso_bus_watchdog.git
     cd ~/ros2_tractobots
     ```
