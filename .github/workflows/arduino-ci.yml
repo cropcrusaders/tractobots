@@ -24,6 +24,11 @@ jobs:
       - name: Install Arduino AVR core
         run: arduino-cli core install arduino:avr
 
+      - name: Install library dependencies
+        run: |
+          arduino-cli lib install PID
+          arduino-cli lib install ros_lib
+
       - name: Compile JD6330 sketch
         run: arduino-cli compile --fqbn arduino:avr:uno Arduino-JD6330/Arduino-JD6330.ino
 
