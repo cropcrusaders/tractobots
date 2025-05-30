@@ -12,7 +12,7 @@ Field robots for precision agriculture — now super‑powered on **ROS 2 (Humb
 - **MapViz integration**: Offline Google Maps + live pose/TF visualization  
 - **Row-by-Row Guidance**: Precise A–B line following for autonomous pass‑by‑pass tractor operation  
 - **ISOBUS Watchdog Node**: New C++ node using AgIsoStack++ to monitor engine oil pressure, fuel pressure, coolant temp, and fuel level with auto cut‑out and emergency‑stop  
-- **Mission Control UI**: Simple web page to start or stop missions
+ - **Mission Control UI**: Web page to start/stop missions and trigger an emergency stop
 
 ---
 
