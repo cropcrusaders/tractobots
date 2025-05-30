@@ -18,7 +18,7 @@ jobs:
       - name: Setup ROS 2
         uses: ros-tooling/setup-ros@v0.2
         with:
-          distribution: humble
+          required-ros-distributions: humble
 
       # 3. Install OS-level build tools
       - name: Install OS dependencies
