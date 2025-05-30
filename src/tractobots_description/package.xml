@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>tractobots_description</name>
   <version>0.0.1</version>
   <description>
@@ -13,5 +13,9 @@
   <url type="repository">https://github.com/cropcrusaders/tractobots.git</url>
   <license>GPLv3</license>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
