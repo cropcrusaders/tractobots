@@ -135,4 +135,4 @@ This README outlines a complete plan to evolve Tractobots into a **fully autonom
 
 This is an open roadmap. If you’re building autonomous systems or ISOBUS tools for farming, we’d love your feedback or help extending this framework. Fork and PR welcome!
 
-Licensed under **GPL v3**. Built with care by **Crop Crusaders**.
+Licensed under the **Autonomous Tractor Software License (ATSL) 1.0**. Built with care by **Crop Crusaders**.
