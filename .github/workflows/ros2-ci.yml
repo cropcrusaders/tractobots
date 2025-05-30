@@ -7,7 +7,9 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    # ROS 2 Humble packages are only available for Ubuntu 22.04 (Jammy)
+    # Use the jammy runner so apt can install ros-humble-desktop
+    runs-on: ubuntu-22.04
     steps:
 
       # 1. Check out repository
