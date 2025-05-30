@@ -1,7 +1,7 @@
 <package format="3">
   <name>tractobots_mission_ui</name>
   <version>0.0.1</version>
-  <description>Simple web-based mission control interface for Tractobots</description>
+  <description>Simple web-based and Tkinter mission control interface for Tractobots</description>
 
   <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
   <license>GPLv3</license>

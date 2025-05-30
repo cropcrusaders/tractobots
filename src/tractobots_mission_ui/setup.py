@@ -15,11 +15,12 @@ setup(
     zip_safe=True,
     maintainer='Kyler Laird',
     maintainer_email='KylerLaird@todo.com',
-    description='Web interface to start/stop missions',
+    description='Web and GUI interface to start/stop missions',
     license='GPLv3',
     entry_points={
         'console_scripts': [
             'mission_ui_node = tractobots_mission_ui.mission_ui_node:main',
+            'mission_gui_node = tractobots_mission_ui.mission_gui_node:main',
         ],
     },
 )

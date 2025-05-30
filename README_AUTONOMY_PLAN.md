@@ -113,7 +113,7 @@ This README outlines a complete plan to evolve Tractobots into a **fully autonom
 | `isobus_steering_node` | Sends ISOBUS messages to control steering    |
 | `tool_control_node`    | Toggles implement tools from Z commands      |
 | `field_logger_node`    | Records geotagged actions and tool state     |
-| `mission_ui_node`      | GUI/Web UI to control missions & display logs|
+| `mission_ui_node` / `mission_gui_node` | Web or Tk GUI to control missions & display logs|
 
 ---
 

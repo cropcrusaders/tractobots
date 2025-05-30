@@ -12,7 +12,7 @@ Field robots for precision agriculture — now super‑powered on **ROS 2 (Humb
 - **MapViz integration**: Offline Google Maps + live pose/TF visualization  
 - **Row-by-Row Guidance**: Precise A–B line following for autonomous pass‑by‑pass tractor operation  
 - **ISOBUS Watchdog Node**: New C++ node using AgIsoStack++ to monitor engine oil pressure, fuel pressure, coolant temp, and fuel level with auto cut‑out and emergency‑stop  
- - **Mission Control UI**: Web page to start/stop missions and trigger an emergency stop
+ - **Mission Control UI**: Web page or Tkinter GUI to start/stop missions and trigger an emergency stop
 
 ---
 
@@ -181,6 +181,17 @@ Published topics:
 1. **Record A–B line**: In your driver, hold Nav + Y to start “north” line at current GPS.  
 2. **Follow**: The Line Follower algorithm computes cross‑track error and steers accordingly.  
 3. **Repeat**: At end‑of‑row, manually switch row or extend logic for auto headland turns.
+
+### 7. Mission Control UI
+
+A small Tkinter window can start or stop missions and toggle the emergency stop.
+
+```bash
+ros2 run tractobots_mission_ui mission_gui_node
+```
+
+The original web interface is still available on port 8088 when running
+`mission_ui_node`.
 
 ---
 
