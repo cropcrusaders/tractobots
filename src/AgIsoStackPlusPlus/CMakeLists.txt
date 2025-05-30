@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
-project(AgIsoStackPlusPlus)
+cmake_minimum_required(VERSION 3.22)
+project(AgIsoStackPlusPlus LANGUAGES CXX C)
+
+find_package(ament_cmake REQUIRED)
 
 add_library(isobus
   src/Isobus/isobus/can_message.cpp
@@ -13,16 +15,21 @@ add_library(isobus
 # Public headers
 target_include_directories(isobus PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(isobus PUBLIC pthread)
 
 install(TARGETS isobus
-  EXPORT isobus-export
+  EXPORT export_isobus
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
 
 install(DIRECTORY include/ DESTINATION include)
 
+ament_export_include_directories(include)
+ament_export_libraries(isobus)
+ament_export_targets(export_isobus HAS_LIBRARY_TARGET)
 
+ament_package()
