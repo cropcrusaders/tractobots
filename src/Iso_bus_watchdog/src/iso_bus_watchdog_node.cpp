@@ -118,9 +118,17 @@ private:
     float temp = d[5] - 40.0f;  // SPN 110 (1 °C/bit, –40 °C offset)
 
     // Publish readings
-    pub_oil_->publish(std_msgs::msg::Float32{oil});
-    pub_fuel_->publish(std_msgs::msg::Float32{fuel});
-    pub_temp_->publish(std_msgs::msg::Float32{temp});
+    std_msgs::msg::Float32 oil_msg;
+    oil_msg.data = oil;
+    pub_oil_->publish(oil_msg);
+
+    std_msgs::msg::Float32 fuel_msg;
+    fuel_msg.data = fuel;
+    pub_fuel_->publish(fuel_msg);
+
+    std_msgs::msg::Float32 temp_msg;
+    temp_msg.data = temp;
+    pub_temp_->publish(temp_msg);
 
     // Update freshness
     last_oil_  = last_fuel_  = last_temp_  = now;
@@ -137,7 +145,9 @@ private:
     auto now = std::chrono::steady_clock::now();
     float level = msg.get_data()[0] * 0.4f; // SPN 96 (0.4 %/bit)
 
-    pub_level_->publish(std_msgs::msg::Float32{level});
+    std_msgs::msg::Float32 level_msg;
+    level_msg.data = level;
+    pub_level_->publish(level_msg);
     last_level_ = now;
 
     if (level < level_min_ || level > level_max_) {
