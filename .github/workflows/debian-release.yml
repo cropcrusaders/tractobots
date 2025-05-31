@@ -1,0 +1,107 @@
+name: Debian Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  ROS_DISTRO: humble
+
+jobs:
+  build:
+    name: Build Debian packages
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup ROS 2
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: ${{ env.ROS_DISTRO }}
+
+      - name: Register qemu for ARM64
+        if: matrix.arch == 'arm64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+      - name: Build workspace
+        run: |
+          source /opt/ros/$ROS_DISTRO/setup.bash
+          colcon build --merge-install
+
+      - name: Generate Debian packaging
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-bloom fakeroot dpkg-dev
+          bloom-generate rosdebian --ros-distro $ROS_DISTRO
+          dpkg-buildpackage -a${{ matrix.arch }} -us -uc
+
+      - name: Collect .deb packages
+        run: |
+          mkdir -p debs
+          mv ../*.deb debs/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: debs-${{ matrix.arch }}
+          path: debs/*.deb
+
+  release:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download all deb packages
+        uses: actions/download-artifact@v3
+        with:
+          pattern: debs-*
+          merge-multiple: true
+          path: packages
+
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.APT_GPG_PRIVATE_KEY }}" | gpg --batch --import
+          gpg --batch --export --armor > packages/gpg.key
+
+      - name: Create APT repository
+        uses: morph027/apt-repo-action@v2
+        with:
+          packages: packages/*.deb
+          codename: ${{ secrets.CODENAME }}
+          components: main
+          architectures: amd64,arm64
+          repo-name: ros-${{ env.ROS_DISTRO }}
+          signing-key: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+          output: repo
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: repo
+
+      - name: Deploy to Pages
+        uses: actions/deploy-pages@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Debian packages with Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: packages/*.deb
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: APT summary
+        run: |
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "curl -fsSL https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/gpg.key | sudo tee /usr/share/keyrings/${{ github.event.repository.name }}.gpg > /dev/null" >> $GITHUB_STEP_SUMMARY
+          echo "echo \"deb [signed-by=/usr/share/keyrings/${{ github.event.repository.name }}.gpg arch=amd64,arm64] https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }} ${{ secrets.CODENAME }} main\" | sudo tee /etc/apt/sources.list.d/${{ github.event.repository.name }}.list" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
