@@ -6,12 +6,15 @@ find_package(ament_cmake REQUIRED)
 
 file(GLOB ISOBUS_CORE_SRC CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/isobus/*.cpp") # ★ Codex-edit
+file(GLOB HARDWARE_SRC CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/hardware_integration/*.cpp")
 
-set(UTILITY_SRC
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/utility/thread_synchronization.cpp")
+file(GLOB UTILITY_SRC CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/utility/*.cpp")
 
 add_library(isobus
   ${ISOBUS_CORE_SRC}
+  ${HARDWARE_SRC}
   ${UTILITY_SRC}
 ) # ★ Codex-edit
 
