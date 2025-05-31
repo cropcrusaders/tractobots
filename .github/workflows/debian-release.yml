@@ -49,7 +49,7 @@ jobs:
           mv ../*.deb debs/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debs-${{ matrix.arch }}
           path: debs/*.deb
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download all deb packages
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           pattern: debs-*
           merge-multiple: true
