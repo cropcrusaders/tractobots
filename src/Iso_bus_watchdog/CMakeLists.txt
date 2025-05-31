@@ -5,7 +5,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(Threads REQUIRED)
-find_package(AgIsoStackPlusPlus REQUIRED)
+find_package(agisostack_plus_plus REQUIRED)
 
 
 add_executable(iso_bus_watchdog_node
@@ -15,7 +15,7 @@ add_executable(iso_bus_watchdog_node
 ament_target_dependencies(iso_bus_watchdog_node
   rclcpp
   std_msgs
-  AgIsoStackPlusPlus
+  agisostack_plus_plus
 ) # ★ Codex-edit
 
 # link pthreads for AgIsoStack++

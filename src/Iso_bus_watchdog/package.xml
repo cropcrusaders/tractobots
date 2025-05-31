@@ -10,8 +10,8 @@
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
-  <build_depend>AgIsoStackPlusPlus</build_depend> # ★ Codex-edit
-  <exec_depend>AgIsoStackPlusPlus</exec_depend> # ★ Codex-edit
+  <build_depend>agisostack_plus_plus</build_depend> # ★ Codex-edit
+  <exec_depend>agisostack_plus_plus</exec_depend> # ★ Codex-edit
 
   <export>
     <build_type>ament_cmake</build_type>
