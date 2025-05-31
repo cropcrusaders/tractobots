@@ -21,19 +21,27 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED) # ★ Codex-edit
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
-file(GLOB DRIVER_CPP_SOURCES
+file(GLOB DRIVER_SOURCES
+  "Src/*.c"
   "Src/*.cpp"
+  "Src/rs232/*.[cC]*"
+  "Src/NTRIP_Client/**/*.c"
 ) # ★ Codex-edit
 
 add_executable(adnav_driver
-  ${DRIVER_CPP_SOURCES}
-  Src/Rs232/rs232.c
-  Src/an_packet_protocol.c
-  Src/spatial_packets.c
-  Src/NTRIP_Client/NTRIP/ntripclient.c
+  ${DRIVER_SOURCES}
 ) # ★ Codex-edit
-ament_target_dependencies(adnav_driver rclcpp std_msgs sensor_msgs diagnostic_msgs geometry_msgs)
+target_include_directories(adnav_driver PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/Src/rs232
+) # ★ Codex-edit
+ament_target_dependencies(adnav_driver
+  rclcpp sensor_msgs geometry_msgs
+  tf2 tf2_ros tf2_geometry_msgs
+) # ★ Codex-edit
 
 install(TARGETS
 adnav_driver
