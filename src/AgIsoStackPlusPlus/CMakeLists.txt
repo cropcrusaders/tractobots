@@ -6,7 +6,8 @@ find_package(ament_cmake REQUIRED)
 
 file(GLOB_RECURSE ISOBUS_CORE_SRC CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/isobus/*.cpp" # ★ Codex-edit
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/utility/*.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/utility/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/hardware_integration/*.cpp")
 
 add_library(isobus ${ISOBUS_CORE_SRC}) # ★ Codex-edit
 
