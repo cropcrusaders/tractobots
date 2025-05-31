@@ -18,6 +18,36 @@ Field robots for precision agriculture — now super‑powered on **ROS 2 (Humb
 
 ## ⚙️ Prerequisites
 
+### 🪟 Windows + WSL Setup (Optional)
+
+If you are developing on **Windows 10/11**, the easiest way to run the Linux
+ROS 2 stack is through **WSL 2**. In an elevated PowerShell run:
+
+```powershell
+wsl --install
+```
+
+Reboot if prompted and make sure version 2 is the default:
+
+```powershell
+wsl --set-default-version 2
+```
+
+Install the Ubuntu 22.04 distribution if it was not installed automatically:
+
+```powershell
+wsl --install -d Ubuntu-22.04
+```
+
+Start the new Ubuntu terminal from the Start menu and follow all remaining
+Linux commands in this README from inside that shell. For GUI tools such as
+MapViz or RViz you also need an X server on Windows (e.g. **VcXsrv**) and must
+export the display inside WSL:
+
+```bash
+export DISPLAY=:0
+```
+
 ### 1. ROS 2 Humble on Ubuntu 22.04
 
 ```bash
@@ -101,6 +131,62 @@ MapViz can now point at `http://localhost:8080/services/tile.xml`.
     colcon build --symlink-install
     source install/setup.bash
     ```
+
+---
+
+## 🛠️ Detailed Build & Run
+
+Below is a full walkthrough to compile the workspace and run either a simulated
+environment or the real tractor.
+
+### 1. Compile the workspace
+
+```bash
+cd ~/ros2_tractobots
+rosdep install --from-paths src --ignore-src -r -y
+colcon build --symlink-install
+source install/setup.bash
+```
+
+### 2. Running a simulation
+
+You can test the stack without any physical hardware attached. Launch the
+sensors and state estimation, then open MapViz to visualize the robot:
+
+```bash
+ros2 launch tractobots_launchers bringup.launch.py
+ros2 launch tractobots_launchers mapviz.launch.py  # optional GUI
+```
+
+Use the joystick driver to send manual commands while observing odometry in
+MapViz:
+
+```bash
+ros2 run joy joy_node
+ros2 run tractobots_navigation driver
+```
+
+### 3. Running on real hardware
+
+Connect your Advanced Navigation INS and bring up the CAN interface:
+
+```bash
+sudo ip link set can0 up type can bitrate 250000
+```
+
+Start the standard bringup along with teleoperation or your autonomous mission:
+
+```bash
+ros2 launch tractobots_launchers bringup.launch.py
+ros2 run joy joy_node
+ros2 run tractobots_navigation driver
+```
+
+For safety-critical monitoring you can add the ISOBUS watchdog node:
+
+```bash
+ros2 run iso_bus_watchdog iso_bus_watchdog_node
+```
 
 ---
 
