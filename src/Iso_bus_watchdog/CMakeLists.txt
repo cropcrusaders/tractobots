@@ -12,6 +12,9 @@ add_executable(iso_bus_watchdog_node
   src/iso_bus_watchdog_node.cpp
 )
 
+target_link_libraries(iso_bus_watchdog_node isobus) # ★ Codex-edit
+ament_target_dependencies(iso_bus_watchdog_node rclcpp diagnostic_msgs isobus) # ★ Codex-edit
+
 ament_target_dependencies(iso_bus_watchdog_node
   rclcpp
   std_msgs
