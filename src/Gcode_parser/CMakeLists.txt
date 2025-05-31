@@ -16,6 +16,7 @@ add_executable(gcode_reader_node
   Src/gcode_parser.cpp
   Src/coordinate_conversion.cpp
 )
+set_target_properties(gcode_reader_node PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
 
 target_include_directories(gcode_reader_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
@@ -42,6 +43,7 @@ if(BUILD_TESTING)
     tests/test_gcode_parser.cpp
     Src/gcode_parser.cpp
   )
+  set_target_properties(gcode_parser_test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
   target_include_directories(gcode_parser_test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Include
   )
@@ -53,6 +55,7 @@ if(BUILD_TESTING)
     tests/test_coordinate_conversion.cpp
     Src/coordinate_conversion.cpp
   )
+  set_target_properties(coordinate_conversion_test PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
   target_include_directories(coordinate_conversion_test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Include
   )
