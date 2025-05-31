@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
 project(ros2-driver LANGUAGES CXX C)
 
+# Linter toggle - off by default and enabled only in local development.
+option(ENABLE_LINT_TESTS "Run ament linters during colcon test" OFF)
+
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
@@ -56,13 +59,10 @@ install(
 if(BUILD_TESTING)
 
   #
-  # ─── LINTING TOGGLE ────────────────────────────────────────────────────────────
-  #
+  # ---- L I N T E R S (optional) ----------------------------------------------
+  # Toggle with -DENABLE_LINT_TESTS=ON during colcon test
 
-  # Turn OFF in CI while code style is being fixed; default ON for normal dev work.
-  option(ENABLE_LINTING "Run ament_* linter tests" ON)
-
-  if(ENABLE_LINTING)
+  if(ENABLE_LINT_TESTS)
     find_package(ament_lint_auto REQUIRED)
     ament_lint_auto_find_test_dependencies()
   endif()

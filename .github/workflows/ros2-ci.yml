@@ -7,83 +7,34 @@ on:
 
 jobs:
   build-and-test:
-    # ROS 2 Humble packages are only available for Ubuntu 22.04 (Jammy)
-    # Use the jammy runner so apt can install ros-humble-desktop
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4
 
-      # 1. Check out repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # ---------- ROS Humble ---------------------
+      - uses: ros-tooling/setup-ros@0.7.1
+        with:
+          required-ros-distributions: humble
 
-      # 2. Install ROS 2 (Humble)
-      - name: Setup ROS 2
+      # ---------- Extra test framework ----------
+      - name: Install ament test harness (no linters)
         run: |
-          sudo apt update && sudo apt install -y curl gnupg2 lsb-release software-properties-common
-          sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list
-          sudo apt update
-          sudo apt install -y ros-humble-desktop python3-colcon-common-extensions python3-rosdep2 python3-pip
-
-      - name: Install ROS 2 base
-        run: |
-          sudo apt update
-          sudo apt install ros-humble-ros-base -y
-          source /opt/ros/humble/setup.bash
-
-      # 3. Install OS-level build tools
-      - name: Install OS dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pytest
-
-      # Install tools required for running package tests and linters
-      - name: Install test dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            ros-humble-ament-cmake \
-            ros-humble-ament-cmake-test \
-            ros-humble-ament-cmake-gtest \
-            ros-humble-ament-cmake-pytest \
-            ros-humble-ament-lint-auto \
-            ros-humble-ament-lint-common
-          source /opt/ros/humble/setup.bash
-          echo "PYTHONPATH=$PYTHONPATH"
-
-      # 4. Install ROS 2 package dependencies
-      - name: rosdep install
-        run: |
-          sudo rosdep init || true
-          rosdep update
-          rosdep install --from-paths src --ignore-src -r -y
-
-      # 5. Prepare build environment
-      - name: Install ros-base and setup
-        run: |
-          sudo apt update
-          sudo apt install -y ros-humble-ros-base
-          source /opt/ros/humble/setup.bash
-
-      # 6. Build the workspace
-      - name: Colcon build
-        run: |
-          source /opt/ros/humble/setup.bash
-          colcon build --symlink-install --cmake-args -DENABLE_LINTING=OFF
-
-      # Restore missing ament-cmake-test helpers
-      - name: Reinstall test helpers
-        run: |
-          sudo apt-get update -qq
+          sudo apt-get update
           sudo apt-get install -y \
-            ros-humble-ament-cmake \
-            ros-humble-ament-cmake-test \
-            ros-humble-ament-lint-auto \
-            ros-humble-ament-lint-common
-          source /opt/ros/humble/setup.bash && env
-      # 7. Run tests and report results
-      - name: Colcon test
+            python3-ament-cmake
+
+      # ---------- Build --------------------------
+      - name: colcon build
         run: |
-          source /opt/ros/humble/setup.bash
-          colcon test --event-handlers console_direct+ --cmake-args -DENABLE_LINTING=OFF
+          colcon build \
+            --event-handlers console_direct+ \
+            --cmake-args -DENABLE_LINT_TESTS=OFF
+
+      # ---------- Test ---------------------------
+      - name: colcon test
+        run: |
+          colcon test \
+            --event-handlers console_direct+
+      - name: colcon test-result
+        run: |
           colcon test-result --verbose
