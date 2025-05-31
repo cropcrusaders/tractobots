@@ -216,6 +216,11 @@ ros2 run iso_bus_watchdog iso_bus_watchdog_node
 
 ## 🚀 Usage
 
+If you want a short reference with the basic build and run steps,
+see [docs/USAGE_GUIDE.md](docs/USAGE_GUIDE.md).
+When you roll into the paddock, follow the **Example Paddock Workflow**
+section in that guide for a quick start.
+
 Open **five** terminals, each sourcing your workspace:
 
 ```bash
