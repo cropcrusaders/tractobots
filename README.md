@@ -350,6 +350,9 @@ If you are looking for the source location of each ROS 2 node in this
 repository, check the table in
 [docs/NODE_REFERENCES.md](docs/NODE_REFERENCES.md).
 
+Instructions for creating simple waypoint files in G-code format are available
+in [docs/GCODE_GENERATOR.md](docs/GCODE_GENERATOR.md).
+
 ---
 
 ## 📝 License
