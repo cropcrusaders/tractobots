@@ -69,7 +69,7 @@ jobs:
       - name: Colcon build
         run: |
           source /opt/ros/humble/setup.bash
-          colcon build --symlink-install -D ENABLE_LINTING=OFF
+          colcon build --symlink-install --cmake-args -DENABLE_LINTING=OFF
 
       # Restore missing ament-cmake-test helpers
       - name: Reinstall test helpers
@@ -85,5 +85,5 @@ jobs:
       - name: Colcon test
         run: |
           source /opt/ros/humble/setup.bash
-          colcon test --event-handlers console_direct+ -D ENABLE_LINTING=OFF
+          colcon test --event-handlers console_direct+ --cmake-args -DENABLE_LINTING=OFF
           colcon test-result --verbose
