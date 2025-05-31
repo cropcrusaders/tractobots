@@ -76,6 +76,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-bloom fakeroot dpkg-dev
+          # python3-bloom exports a pinned ROS_DISTRO_INDEX_URL which breaks
+          # subsequent rosdep calls. Unset it before running bloom.
+          unset ROS_DISTRO_INDEX_URL
           bloom-generate rosdebian --ros-distro humble
           dpkg-buildpackage -aamd64 -us -uc
 
