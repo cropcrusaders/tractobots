@@ -47,8 +47,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          python3-ament-cmake \
-          python3-ament-cmake-test   # ← supplies “ament_cmake_test”
+          ros-humble-ament-cmake \
+          ros-humble-ament-cmake-test   # ← supplies “ament_cmake_test”
 
     # ------------------------------------------------------------
     #  (B)  Neutralise Bloom’s pinned rosdistro index variable
