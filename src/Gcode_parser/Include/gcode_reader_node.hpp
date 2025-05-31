@@ -4,7 +4,7 @@
 #include "nav_msgs/msg/path.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "gcode_parser.h"
-#include "std_msgs/msg/uint8.hpp"
+#include "std_msgs/msg/u_int8.hpp"
 
 class GCodeReaderNode : public rclcpp::Node {
 public:

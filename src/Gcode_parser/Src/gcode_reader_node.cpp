@@ -1,6 +1,6 @@
 #include "gcode_reader_node.hpp"
 #include "coordinate_conversion.h"
-#include "std_msgs/msg/uint8.hpp"
+#include "std_msgs/msg/u_int8.hpp"
 
 using std_msgs::msg::UInt8;
 
