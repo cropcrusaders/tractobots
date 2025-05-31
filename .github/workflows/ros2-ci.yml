@@ -85,7 +85,7 @@ jobs:
           mv ../*.deb debs/
 
       - name: Upload Debian artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debs
           path: debs/*.deb
