@@ -227,3 +227,5 @@ This project is released under the **Autonomous Tractor Software License (ATSL) 
 
 `iso_bus_watchdog` is an exception and continues to be distributed under the MIT
 license in order to remain compatible with the upstream AgIsoStack++ project.
+
+<!-- Dummy update to trigger CI -->
