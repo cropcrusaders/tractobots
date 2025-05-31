@@ -22,8 +22,12 @@ find_package(sensor_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
+file(GLOB DRIVER_CPP_SOURCES
+  "Src/*.cpp"
+) # ★ Codex-edit
+
 add_executable(adnav_driver
-  Src/advanced_navigation_driver.cpp
+  ${DRIVER_CPP_SOURCES}
   Src/Rs232/rs232.c
   Src/an_packet_protocol.c
   Src/spatial_packets.c
