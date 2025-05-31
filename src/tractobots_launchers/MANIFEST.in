@@ -1,0 +1,3 @@
+include package.xml
+include resource/tractobots_launchers
+recursive-include launch *.py
