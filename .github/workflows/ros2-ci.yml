@@ -43,11 +43,13 @@ jobs:
           sudo apt update
           sudo apt install -y \
             ros-humble-ament-cmake \
+            ros-humble-ament-cmake-test \
             ros-humble-ament-cmake-gtest \
             ros-humble-ament-cmake-pytest \
             ros-humble-ament-lint-auto \
             ros-humble-ament-lint-common
           source /opt/ros/humble/setup.bash
+          echo "PYTHONPATH=$PYTHONPATH"
 
       # 4. Install ROS 2 package dependencies
       - name: rosdep install
@@ -61,7 +63,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y ros-humble-ros-base
-          # ★ Codex-edit
+          source /opt/ros/humble/setup.bash
 
       # 6. Build the workspace
       - name: Colcon build
@@ -72,5 +74,6 @@ jobs:
       # 7. Run tests and report results
       - name: Colcon test
         run: |
+          source /opt/ros/humble/setup.bash
           colcon test --event-handlers console_direct+
           colcon test-result --verbose

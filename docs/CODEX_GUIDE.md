@@ -15,6 +15,15 @@ up all required packages is to run the helper script in the repository root:
 It installs ROS 2, Python build tools, and initializes `rosdep`. Make sure to
 `source /opt/ros/humble/setup.bash` after installation.
 
+If you plan to run the package tests or linters, also install the ROS 2
+`ament_*` helpers:
+
+```bash
+sudo apt install ros-humble-ament-cmake-test \
+  ros-humble-ament-cmake-gtest ros-humble-ament-cmake-pytest \
+  ros-humble-ament-lint-auto ros-humble-ament-lint-common
+```
+
 ## 2. Building the Workspace
 
 Clone the repository inside a ROS 2 workspace and build with `colcon`:
@@ -42,7 +51,13 @@ Additional launch files exist for MapViz and pose transforms.
 ## 4. Running Tests
 
 Some packages include unit tests using `pytest` or `ament_cmake`. After
-building the workspace, tests can be executed with:
+building the workspace, ensure the ROS environment is sourced:
+
+```bash
+source /opt/ros/humble/setup.bash
+```
+
+Then run the tests with:
 
 ```bash
 colcon test
