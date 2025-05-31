@@ -3,7 +3,13 @@
 #include <vector>
 
 struct GCodeCommand {
-    int code; // G0 or G1
+    enum Type {
+        Move,
+        DropPlow,
+        LiftPlow
+    } type = Move;
+
+    int code = 0; // G0 or G1
     double latitude = 0.0;
     double longitude = 0.0;
     double altitude = 0.0;

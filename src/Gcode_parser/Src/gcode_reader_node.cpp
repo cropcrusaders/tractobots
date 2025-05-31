@@ -1,5 +1,8 @@
 #include "gcode_reader_node.hpp"
 #include "coordinate_conversion.h"
+#include "std_msgs/msg/uint8.hpp"
+
+using std_msgs::msg::UInt8;
 
 GCodeReaderNode::GCodeReaderNode()
     : Node("gcode_reader_node")
@@ -13,6 +16,8 @@ GCodeReaderNode::GCodeReaderNode()
     get_parameter("origin_lon", origin_lon_);
 
     path_pub_ = create_publisher<nav_msgs::msg::Path>("gcode_path", 10);
+    hitch_pub_ = create_publisher<UInt8>("/hitch/put", 10);
+
     loadGCodeAndPublish();
 }
 
@@ -38,6 +43,57 @@ void GCodeReaderNode::loadGCodeAndPublish() {
 
     RCLCPP_INFO(this->get_logger(), "Publishing G-code path with %zu waypoints", path_msg.poses.size());
     path_pub_->publish(path_msg);
+
+    executeCommands(commands);
+}
+
+void GCodeReaderNode::executeCommands(const std::vector<GCodeCommand>& cmds)
+{
+    for (const auto& cmd : cmds) {
+        switch (cmd.type) {
+            case GCodeCommand::Move:
+                moveTo(cmd);
+                break;
+            case GCodeCommand::DropPlow:
+                dropPlow();
+                break;
+            case GCodeCommand::LiftPlow:
+                liftPlow();
+                break;
+        }
+    }
+}
+
+void GCodeReaderNode::moveTo(const GCodeCommand& cmd)
+{
+    // Convert to local ENU for future nav2 integration
+    auto enu = coordinate_conversion::latLonToLocal(
+        cmd.latitude, cmd.longitude, origin_lat_, origin_lon_);
+
+    geometry_msgs::msg::PoseStamped goal;
+    goal.header.stamp = now();
+    goal.header.frame_id = "map";
+    goal.pose.position.x = enu.east;
+    goal.pose.position.y = enu.north;
+    goal.pose.position.z = cmd.altitude;
+    goal.pose.orientation.w = 1.0;
+
+    // TODO: send NavigateToPose action to Nav2
+    (void)goal; // suppress unused warning
+}
+
+void GCodeReaderNode::liftPlow()
+{
+    UInt8 msg;
+    msg.data = 2; // up command
+    hitch_pub_->publish(msg);
+}
+
+void GCodeReaderNode::dropPlow()
+{
+    UInt8 msg;
+    msg.data = 1; // down command
+    hitch_pub_->publish(msg);
 }
 
 int main(int argc, char **argv)

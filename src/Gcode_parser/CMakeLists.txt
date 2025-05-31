@@ -27,6 +27,7 @@ ament_target_dependencies(gcode_reader_node
   rclcpp
   nav_msgs
   geometry_msgs
+  std_msgs
 )
 
 install(TARGETS gcode_reader_node
