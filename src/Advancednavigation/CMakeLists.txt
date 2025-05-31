@@ -22,7 +22,13 @@ find_package(sensor_msgs REQUIRED)
 find_package(diagnostic_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-add_executable(adnav_driver src/advanced_navigation_driver.cpp src/rs232/rs232.c src/an_packet_protocol.c src/spatial_packets.c src/NTRIP_Client/NTRIP/ntripclient.c)
+add_executable(adnav_driver
+  Src/advanced_navigation_driver.cpp
+  Src/Rs232/rs232.c
+  Src/an_packet_protocol.c
+  Src/spatial_packets.c
+  Src/NTRIP_Client/NTRIP/ntripclient.c
+) # ★ Codex-edit
 ament_target_dependencies(adnav_driver rclcpp std_msgs sensor_msgs diagnostic_msgs geometry_msgs)
 
 install(TARGETS
