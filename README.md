@@ -193,6 +193,18 @@ ros2 run tractobots_mission_ui mission_gui_node
 The original web interface is still available on port 8088 when running
 `mission_ui_node`.
 
+### 8. Nav2 Autonomous Navigation
+
+A minimal Nav2 launch file is now included. It starts the standard
+`nav2_bringup` stack with parameters tailored for Tractobots:
+
+```bash
+ros2 launch tractobots_nav2 nav2.launch.py
+```
+
+The stack subscribes to `/goal_pose` or `/navigate_to_pose` actions and
+publishes `/cmd_vel` for the driver or steering controller.
+
 ---
 
 ## 📈 Continuous Integration (GitHub Actions)
