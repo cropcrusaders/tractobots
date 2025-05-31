@@ -37,6 +37,16 @@ jobs:
           sudo apt update
           sudo apt install -y python3-pytest
 
+      # Install tools required for running package tests and linters
+      - name: Install test dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            python3-ament-cmake \
+            ros-humble-ament-lint-auto \
+            ros-humble-ament-lint-common
+          source /opt/ros/humble/setup.bash
+
       # 4. Install ROS 2 package dependencies
       - name: rosdep install
         run: |
