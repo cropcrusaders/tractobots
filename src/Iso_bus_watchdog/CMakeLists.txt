@@ -13,12 +13,11 @@ add_executable(iso_bus_watchdog_node
 )
 
 target_link_libraries(iso_bus_watchdog_node isobus) # ★ Codex-edit
-ament_target_dependencies(iso_bus_watchdog_node rclcpp isobus) # ★ Codex-edit
 
 ament_target_dependencies(iso_bus_watchdog_node
   rclcpp
   std_msgs
-)
+) # ★ Codex-edit
 
 # link pthreads for AgIsoStack++
 target_link_libraries(iso_bus_watchdog_node
