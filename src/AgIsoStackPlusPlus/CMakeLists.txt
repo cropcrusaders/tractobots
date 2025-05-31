@@ -4,12 +4,10 @@ project(AgIsoStackPlusPlus LANGUAGES CXX) # ★ Codex-edit
 
 find_package(ament_cmake REQUIRED)
 
-file(GLOB_RECURSE ISOBUS_CORE_SRC CONFIGURE_DEPENDS
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/isobus/*.cpp" # ★ Codex-edit
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/utility/*.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/hardware_integration/*.cpp")
+file(GLOB_RECURSE ISOBUS_SRC CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/isobus/*.cpp") # ★ Codex-edit
 
-add_library(isobus ${ISOBUS_CORE_SRC}) # ★ Codex-edit
+add_library(isobus ${ISOBUS_SRC}) # ★ Codex-edit
 
 # Public headers
 target_include_directories(isobus PUBLIC
