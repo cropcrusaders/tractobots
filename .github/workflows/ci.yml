@@ -1,0 +1,96 @@
+# ---------------------------------------------------------------------------
+#  \U0001F4C4  codex_template_ci.yml
+#
+#  Use this file as a **starting point** for your GitHub-Actions workflow.
+#  It demonstrates the minimum changes needed to keep `rosdep` happy after
+#  Bloom is installed, disable all C++/Python/XML linters, and restore
+#  the missing `ament_cmake_test` helpers so that *only* real unit-tests
+#  decide the CI result.
+#
+#  ┌───────────────────────────────────────────────────────────────────────┐
+#  │  HOW TO USE                                                          │
+#  │  1.  Replace “<your-workspace>” with the folder containing `src/`.   │
+#  │  2.  Drop this under `.github/workflows/ci.yml`.                     │
+#  │  3.  Push & iterate.                                                 │
+#  └───────────────────────────────────────────────────────────────────────┘
+#
+# ---------------------------------------------------------------------------
+
+name: ROS-Humble CI (linters off)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-22.04
+    steps:
+    # ------------------------------------------------------------
+    #  Check out ROS workspace
+    # ------------------------------------------------------------
+    - uses: actions/checkout@v4
+
+    # ------------------------------------------------------------
+    #  Source ROS 2 Humble toolchain
+    # ------------------------------------------------------------
+    - uses: ros-tooling/setup-ros@0.7.1
+      with:
+        required-ros-distributions: humble
+
+    # ------------------------------------------------------------
+    #  (A)  Install ONLY what unit-tests need
+    #       – we are *not* bringing in any ament-linters.
+    # ------------------------------------------------------------
+    - name: Install test helpers
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          python3-ament-cmake \
+          python3-ament-cmake-test   # ← supplies “ament_cmake_test”
+
+    # ------------------------------------------------------------
+    #  (B)  Neutralise Bloom’s pinned rosdistro index variable
+    #       (it appears once python3-bloom is on the system).
+    # ------------------------------------------------------------
+    - name: Prevent Bloom from breaking rosdep
+      shell: bash
+      run: |
+        unset ROSDISTRO_INDEX_URL || true
+        unset ROS_DISTRO_INDEX_URL || true
+
+    # ------------------------------------------------------------
+    #  (C)  Install runtime build dependencies for the workspace
+    # ------------------------------------------------------------
+    - name: rosdep install
+      run: |
+        sudo rosdep init  || true   # harmless if already initialised
+        rosdep update
+        rosdep install \
+          --from-paths ./src \
+          --ignore-src \
+          --rosdistro humble -y
+
+    # ------------------------------------------------------------
+    #  (D) Build – turn OFF every linter target via CMake option
+    # ------------------------------------------------------------
+    - name: colcon build (linters disabled)
+      run: |
+        colcon build \
+          --event-handlers console_direct+ \
+          --cmake-args -DENABLE_LINT_TESTS=OFF
+
+    # ------------------------------------------------------------
+    #  (E)  Run the real unit-tests
+    # ------------------------------------------------------------
+    - name: colcon test
+      run: |
+        colcon test --event-handlers console_direct+
+
+    # ------------------------------------------------------------
+    #  (F)  Surface test summary in the log
+    # ------------------------------------------------------------
+    - name: colcon test-result
+      run: |
+        colcon test-result --verbose
