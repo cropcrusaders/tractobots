@@ -39,3 +39,12 @@ void GCodeReaderNode::loadGCodeAndPublish() {
     RCLCPP_INFO(this->get_logger(), "Publishing G-code path with %zu waypoints", path_msg.poses.size());
     path_pub_->publish(path_msg);
 }
+
+int main(int argc, char **argv)
+{
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<GCodeReaderNode>();
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
+}
