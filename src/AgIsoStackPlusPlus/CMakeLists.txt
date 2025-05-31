@@ -4,14 +4,10 @@ project(AgIsoStackPlusPlus LANGUAGES CXX) # ★ Codex-edit
 
 find_package(ament_cmake REQUIRED)
 
-add_library(isobus
-  src/Isobus/isobus/can_message.cpp
-  src/Isobus/isobus/can_message_data.cpp
-  src/Isobus/isobus/can_message_frame.cpp
-  src/Isobus/isobus/can_network_manager.cpp
-  src/Isobus/hardware_integration/socket_can_interface.cpp
-  src/Isobus/hardware_integration/can_hardware_interface.cpp
-)
+file(GLOB_RECURSE ISOBUS_SRC CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/Isobus/**/*.cpp") # ★ Codex-edit
+
+add_library(isobus ${ISOBUS_SRC})
 
 # Public headers
 target_include_directories(isobus PUBLIC
