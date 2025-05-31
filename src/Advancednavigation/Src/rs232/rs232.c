@@ -38,8 +38,8 @@
 #ifdef __linux__   /* Linux */
 
 
-int Cport,
-    error;
+int Cport;
+static int error; /* ★ Codex-edit: made static to avoid symbol clash across files */
 
 struct termios new_port_settings,
        old_port_settings;

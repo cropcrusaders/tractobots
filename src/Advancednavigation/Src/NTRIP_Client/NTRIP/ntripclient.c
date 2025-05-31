@@ -27,7 +27,7 @@
 static char revisionstr[] = "$Revision: 1.51 $";
 static char datestr[]     = "$Date: 2009/09/11 09:49:19 $";
 
-int error = 0;
+static int error = 0; /* ★ Codex-edit: made static to avoid symbol clash across files */
 int sleeptime = 0;
 long i;
 sockettype sockfd = 0;
