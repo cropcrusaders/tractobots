@@ -4,7 +4,7 @@
   <name>ros2-driver</name>
   <version>2.0.1</version>
   <description>Advanced Navigation ROS 2 Driver</description>
-  <maintainer email="support@advancednavigation.com">Support</maintainer>
+  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend> <!-- ★ Codex-edit -->

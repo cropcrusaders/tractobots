@@ -7,7 +7,7 @@
     files that wrap the upstream <code>robot_localization</code> stack for Tractobots.
   </description>
 
-  <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
+  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>GPLv3</license>
 
   <!-- Build system -->

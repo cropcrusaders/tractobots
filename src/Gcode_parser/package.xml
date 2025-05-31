@@ -3,7 +3,7 @@
   <name>gcode_parser</name>
   <version>0.1.1</version>
   <description>G-code parser library and reader node.</description>
-  <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
+  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>GPLv3</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
