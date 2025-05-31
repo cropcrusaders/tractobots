@@ -43,6 +43,11 @@ public:
 
     void call(Args... args) { invoke(args...); }
 
+    std::size_t get_listener_count() const
+    {
+        return listeners.size();
+    }
+
 private:
     std::unordered_map<EventCallbackHandle, Callback> listeners;
     EventCallbackHandle nextHandle{0};
