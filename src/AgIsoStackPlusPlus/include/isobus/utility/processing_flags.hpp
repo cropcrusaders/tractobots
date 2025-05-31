@@ -3,17 +3,25 @@
 
 #include <cstdint>
 
-namespace isobus {
+namespace isobus
+{
 
-class ProcessingFlags {
+using ProcessFlagsCallback = void (*)(std::uint32_t flag, void *parent);
+
+class ProcessingFlags
+{
 public:
-    void set_flag(std::uint32_t flag) { flags |= (1u << flag); }
-    void clear_flag(std::uint32_t flag) { flags &= ~(1u << flag); }
-    bool check_flag(std::uint32_t flag) const { return (flags & (1u << flag)) != 0; }
-    void clear_all() { flags = 0; }
-    std::uint32_t get_flags() const { return flags; }
+    ProcessingFlags(std::uint32_t numberOfFlags, ProcessFlagsCallback processingCallback, void *parentPointer);
+    ~ProcessingFlags();
+
+    void set_flag(std::uint32_t flag);
+    void process_all_flags();
+
 private:
-    std::uint32_t flags{0};
+    ProcessFlagsCallback callback{nullptr};
+    std::uint32_t maxFlag{0};
+    std::uint8_t *flagBitfield{nullptr};
+    void *parent{nullptr};
 };
 
 } // namespace isobus
