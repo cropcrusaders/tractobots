@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 set(CMAKE_WARN_DEPRECATED FALSE) # ★ Codex-edit
-project(AgIsoStackPlusPlus LANGUAGES CXX) # ★ Codex-edit
+project(agisostack_plus_plus LANGUAGES CXX) # ★ Codex-edit
 
 find_package(ament_cmake REQUIRED)
 

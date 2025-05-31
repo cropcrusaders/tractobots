@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>AgIsoStackPlusPlus</name>
+  <name>agisostack_plus_plus</name>
   <version>0.1.0</version>
   <description>Vendor library wrapper for AgIsoStack++</description>
   <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
