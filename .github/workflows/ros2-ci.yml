@@ -42,7 +42,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            python3-ament-cmake \
+            ros-humble-ament-cmake \
+            ros-humble-ament-cmake-gtest \
+            ros-humble-ament-cmake-pytest \
             ros-humble-ament-lint-auto \
             ros-humble-ament-lint-common
           source /opt/ros/humble/setup.bash
