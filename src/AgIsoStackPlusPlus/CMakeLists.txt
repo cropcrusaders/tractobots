@@ -15,8 +15,7 @@ add_library(isobus
 
 # Public headers
 target_include_directories(isobus PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/isobus> # ★ Codex-edit
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # ★ Codex-edit
   $<INSTALL_INTERFACE:include>
 )
 
@@ -29,7 +28,7 @@ install(TARGETS isobus
 
 install(DIRECTORY include/ DESTINATION include)
 
-ament_export_include_directories(include include/isobus) # ★ Codex-edit
+ament_export_include_directories(include) # ★ Codex-edit
 ament_export_libraries(isobus)
 ament_export_targets(export_isobus HAS_LIBRARY_TARGET)
 
