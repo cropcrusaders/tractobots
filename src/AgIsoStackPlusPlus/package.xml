@@ -3,7 +3,7 @@
   <name>AgIsoStackPlusPlus</name>
   <version>0.1.0</version>
   <description>Vendor library wrapper for AgIsoStack++</description>
-  <maintainer email="you@example.com">Your Name</maintainer>
+  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend> <!-- ★ Codex-edit -->

@@ -4,7 +4,7 @@
   <version>0.0.1</version>
   <description>Top‑level launch files that start the whole Tractobots stack.</description>
 
-  <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
+  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>GPLv3</license>
 
   <!-- This is a pure‑launch package, so only ament_python is needed -->

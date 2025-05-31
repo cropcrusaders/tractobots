@@ -4,7 +4,7 @@
   <version>0.0.1</version>
   <description>Launch files for bringing up Tractobots sensors and safety nodes</description>
 
-  <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
+  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>GPLv3</license>
 
   <buildtool_depend>ament_python</buildtool_depend>

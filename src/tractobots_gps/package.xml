@@ -6,7 +6,7 @@
     The tractobots_gps package provides a ROS 2 interface for the NV08C GPS receiver.
   </description>
 
-  <maintainer email="KylerLaird@todo.com">Kyler Laird</maintainer>
+  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>GPLv3</license>
 
   <!-- Use ament_python since this is a Python-based node -->

@@ -22,8 +22,8 @@ setup(
         'tf-transformations',
     ],
     zip_safe=True,
-    maintainer='Kyler Laird',
-    maintainer_email='KylerLaird@todo.com',
+    maintainer='Nicholas Bass',
+    maintainer_email='nckbass218@gmail.com',
     description='Helper nodes (GPS parser, IMU republisher, pose transformer) '
                 'that wrap the robot_localization stack for Tractobots.',
     license='GPLv3',
