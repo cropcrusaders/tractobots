@@ -95,6 +95,30 @@ docker run -d -p 8080:8080 -v ~/mapproxy:/mapproxy danielsnider/mapproxy
 
 MapViz can now point at `http://localhost:8080/services/tile.xml`.
 
+## 🛠️ Hardware Setup
+
+Below is a reference setup for running Tractobots on real machinery.  The
+software can adapt to different tractors or computers, but the following
+components are known to work well:
+
+1. **Computer** – Ubuntu 22.04 PC or Jetson class SBC with at least 4 GB of RAM.
+   Connect all sensors and the CAN adapter to this machine.
+2. **GPS / INS** – An Advanced Navigation INS (e.g. Spatial or M2) provides
+   RTK‑level pose data via serial or USB.  Mount the antenna on the tractor roof
+   and connect the unit to the computer.
+3. **CAN Interface** – A SocketCAN compatible adapter (PEAK PCAN‑USB,
+   Innomaker usb2can, MCP2515 hat, etc.) connects the onboard computer to the
+   tractor’s ISOBUS/CAN wiring. Bring the device up as `can0` at
+   `250000 bit/s` as shown below.
+4. **Joystick** – Any USB gamepad recognized by `joy_node` (Xbox or PS4) can be
+   used for manual control and mission start/stop commands.
+5. **Optional Sensors** – LiDAR, cameras or implement controllers can be added
+   for advanced autonomy. Ensure power and cabling are secured before operating
+   in the field.
+
+With everything wired up and powered on you can follow the bringup steps in the
+next section to launch the stack.
+
 ---
 
 ## 📥 Clone & Build
