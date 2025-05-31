@@ -41,6 +41,7 @@ target_include_directories(adnav_driver PUBLIC
 ament_target_dependencies(adnav_driver
   rclcpp sensor_msgs geometry_msgs
   tf2 tf2_ros tf2_geometry_msgs
+  diagnostic_msgs            # ★ Codex-edit (new)
 ) # ★ Codex-edit
 
 install(TARGETS

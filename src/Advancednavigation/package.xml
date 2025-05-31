@@ -19,6 +19,8 @@
   <exec_depend>tf2</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>tf2_geometry_msgs</exec_depend>
+  <build_depend>diagnostic_msgs</build_depend> <!-- ★ Codex-edit (new) -->
+  <exec_depend>diagnostic_msgs</exec_depend> <!-- ★ Codex-edit (new) -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
