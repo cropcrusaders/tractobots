@@ -14,6 +14,7 @@
 #include "isobus/isobus/can_hardware_abstraction.hpp"
 #include "isobus/isobus/can_message_frame.hpp"
 #include "isobus/utility/event_dispatcher.hpp"
+#include "isobus/utility/thread_synchronization.hpp" // ★ Codex-edit
 
 #include <atomic>
 #include <cstdint>
