@@ -70,7 +70,17 @@ jobs:
         run: |
           source /opt/ros/humble/setup.bash
           colcon build --symlink-install
-          # ★ Codex-edit
+
+      # Restore missing ament-cmake-test helpers
+      - name: Reinstall test helpers
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            ros-humble-ament-cmake \
+            ros-humble-ament-cmake-test \
+            ros-humble-ament-lint-auto \
+            ros-humble-ament-lint-common
+          source /opt/ros/humble/setup.bash && env
       # 7. Run tests and report results
       - name: Colcon test
         run: |
