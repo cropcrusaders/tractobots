@@ -13,6 +13,9 @@ fi
 sudo apt update && sudo apt install -y \
   curl gnupg2 lsb-release software-properties-common
 
+# Enable the 'universe' repository for packages like libunwind-dev
+sudo add-apt-repository -y universe
+
 # Add the ROS 2 repository and key
 sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
   -o /usr/share/keyrings/ros-archive-keyring.gpg

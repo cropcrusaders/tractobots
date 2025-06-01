@@ -53,8 +53,10 @@ export DISPLAY=:0
 > **Note**
 > Tractobots currently targets **Ubuntu 22.04 (Jammy)**. Running the
 > installation steps on Ubuntu 24.04 (Noble) may cause `rosdep` to fail with
-> missing packages such as `libunwind-dev`. For best results use a Jammy-based
-> system or build ROS 2 and Nav2 from source on your distribution.
+> missing packages such as `libunwind-dev`. Ensure the **universe** repository is
+> enabled (`sudo add-apt-repository -y universe`) if apt cannot locate these
+> packages. For best results use a Jammy-based system or build ROS 2 and Nav2
+> from source on your distribution.
 
 ```bash
 sudo apt update && sudo apt install -y   curl gnupg2 lsb-release software-properties-common
