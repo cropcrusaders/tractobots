@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo rosdep init || true
           rosdep update
-          rosdep install --from-paths src --ignore-src -y --rosdistro humble --skip-keys "agisostack_plus_plus"
+          rosdep install --from-paths src --ignore-src -y --rosdistro humble --skip-keys "agisostack_plus_plus nav2_bringup"
 
       # 6. Build the workspace
       - name: Colcon build
