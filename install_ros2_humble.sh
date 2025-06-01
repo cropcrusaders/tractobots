@@ -15,6 +15,7 @@ sudo apt update && sudo apt install -y \
 
 # Enable the 'universe' repository for packages like libunwind-dev
 sudo add-apt-repository -y universe
+sudo apt update
 
 # Add the ROS 2 repository and key
 sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
@@ -30,7 +31,9 @@ sudo apt install -y \
   python3-colcon-common-extensions \
   python3-rosdep2 \
   python3-empy \
-  python3-pip
+  python3-pip \
+  libunwind-dev \
+  libgoogle-glog-dev
 
 # Remove conflicting 'em' package if present
 pip3 uninstall -y em 2>/dev/null || true
