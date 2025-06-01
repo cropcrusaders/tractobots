@@ -29,7 +29,11 @@ sudo apt install -y \
   ros-humble-desktop \
   python3-colcon-common-extensions \
   python3-rosdep2 \
+  python3-empy \
   python3-pip
+
+# Remove conflicting 'em' package if present
+pip3 uninstall -y em 2>/dev/null || true
 
 # Initialize rosdep if needed
 if ! rosdep --version >/dev/null 2>&1; then
