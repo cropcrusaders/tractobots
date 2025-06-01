@@ -7,8 +7,9 @@
   <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
   <license>GPLv3</license>
 
-  <!-- This is a pure‑launch package, so only ament_python is needed -->
-  <buildtool_depend>ament_python</buildtool_depend>
+  <!-- Pure launch package built with ament_cmake -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <!-- Launch files use these packages -->
   <exec_depend>launch</exec_depend>
@@ -21,6 +22,6 @@
   <exec_depend>mapviz</exec_depend>
 
   <export>
-    <build_type>ament_python</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

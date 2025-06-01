@@ -26,5 +26,5 @@ Sourcing `install/setup.bash` after the build makes all nodes available.
 | `gps_parser`, `imu_publisher`, `pose_transformer` | `src/tractobots_robot_localization/tractobots_robot_localization` | Helper nodes for robot localization. |
 | `mission_ui_node`, `mission_gui_node` | `src/tractobots_mission_ui/tractobots_mission_ui` | Web and Tk GUI interfaces for mission control. |
 
-All packages use standard `ament_cmake` or `ament_python` build tooling and do not require any private dependencies. After running `colcon build` you can launch individual nodes with `ros2 run <package> <executable>`.
+All packages use standard `ament_cmake` build tooling (with `ament_cmake_python` for Python nodes) and do not require any private dependencies. After running `colcon build` you can launch individual nodes with `ros2 run <package> <executable>`.
 
