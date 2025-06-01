@@ -10,6 +10,14 @@ Tractobots requires **Ubuntu 22.04** with ROS 2 Humble. The repository include
 ./install_ros2_humble.sh
 ```
 
+If apt cannot find packages like `libunwind-dev`, enable the `universe`
+repository first:
+
+```bash
+sudo add-apt-repository -y universe
+sudo apt update
+```
+
 After installation, remember to source the ROS environment:
 
 ```bash

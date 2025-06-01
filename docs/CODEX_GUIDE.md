@@ -12,6 +12,14 @@ up all required packages is to run the helper script in the repository root:
 ./install_ros2_humble.sh
 ```
 
+If apt cannot locate packages such as `libunwind-dev`, make sure the
+`universe` repository is enabled:
+
+```bash
+sudo add-apt-repository -y universe
+sudo apt update
+```
+
 It installs ROS 2, Python build tools, and initializes `rosdep`. Make sure to
 `source /opt/ros/humble/setup.bash` after installation.
 
