@@ -50,6 +50,12 @@ export DISPLAY=:0
 
 ### 1. ROS 2 Humble on Ubuntu 22.04
 
+> **Note**
+> Tractobots currently targets **Ubuntu 22.04 (Jammy)**. Running the
+> installation steps on Ubuntu 24.04 (Noble) may cause `rosdep` to fail with
+> missing packages such as `libunwind-dev`. For best results use a Jammy-based
+> system or build ROS 2 and Nav2 from source on your distribution.
+
 ```bash
 sudo apt update && sudo apt install -y   curl gnupg2 lsb-release software-properties-common
 
