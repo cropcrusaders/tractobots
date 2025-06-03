@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.22)
 project(tractobots_mission_ui)
 
 find_package(ament_cmake_python REQUIRED)
