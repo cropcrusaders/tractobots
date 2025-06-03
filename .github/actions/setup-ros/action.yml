@@ -5,3 +5,6 @@ runs:
     - name: Install ROS 2 Humble
       run: bash "$GITHUB_ACTION_PATH/install_ros2_humble.sh"
       shell: bash
+    - name: Source ROS 2 setup script
+      run: echo "source /opt/ros/humble/setup.bash" >> "$GITHUB_ENV"
+      shell: bash
