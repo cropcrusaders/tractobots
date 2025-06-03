@@ -35,9 +35,7 @@ jobs:
     # ------------------------------------------------------------
     #  Source ROS 2 Humble toolchain
     # ------------------------------------------------------------
-    - uses: ros-tooling/setup-ros@v0.7.12
-      with:
-        required-ros-distributions: humble
+    - uses: ./.github/actions/setup-ros
 
     # ------------------------------------------------------------
     #  (A)  Install ONLY what unit-tests need
