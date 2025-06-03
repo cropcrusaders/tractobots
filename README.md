@@ -173,6 +173,12 @@ next section to launch the stack.
     source install/setup.bash
     ```
 
+    Or simply run the convenience script from this repository:
+
+    ```bash
+    ./build_workspace.sh
+    ```
+
 ---
 
 ## 🛠️ Detailed Build & Run
@@ -187,6 +193,12 @@ cd ~/ros2_tractobots
 rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install
 source install/setup.bash
+```
+
+Alternatively run the helper script from the repository root:
+
+```bash
+./build_workspace.sh
 ```
 
 ### 2. Running a simulation
