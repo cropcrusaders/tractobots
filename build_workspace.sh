@@ -4,6 +4,7 @@
 # Default workspace directory is ~/ros2_tractobots
 
 set -e
+set -o pipefail  # ensure failure inside pipelines is caught
 
 WS_DIR="${1:-$HOME/ros2_tractobots}"
 REPO_ROOT="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
@@ -26,6 +27,17 @@ fi
 rosdep install --from-paths src --ignore-src -r -y
 
 # Build the workspace
-colcon build --symlink-install
+colcon build --symlink-install \
+  --event-handlers console_cohesion+ --event-handlers console_direct+ \
+  2>&1 | tee build.log
+BUILD_STATUS=${PIPESTATUS[0]}
+
+if [ $BUILD_STATUS -ne 0 ]; then
+  echo "\nBuild failed. Last 20 lines of build.log:" >&2
+  tail -n 20 build.log >&2
+  echo "---" >&2
+  echo "Full log at: $WS_DIR/build.log" >&2
+  exit $BUILD_STATUS
+fi
 
 echo "\nBuild complete. Source the workspace with:\n  source \"$WS_DIR/install/setup.bash\""
