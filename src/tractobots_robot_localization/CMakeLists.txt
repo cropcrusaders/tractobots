@@ -5,7 +5,11 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 
-ament_python_install_package(${PROJECT_NAME})
+# Install the python package located in the 'src' directory
+ament_python_install_package(
+  ${PROJECT_NAME}
+  PACKAGE_DIR src
+)
 
 install(
   DIRECTORY launch params
