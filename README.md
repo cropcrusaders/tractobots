@@ -179,6 +179,14 @@ next section to launch the stack.
     ./build_workspace.sh
     ```
 
+4. **Run linters (optional)**
+
+    Ensure code style is consistent by running the ament linters:
+
+    ```bash
+    ./run_linters.sh
+    ```
+
 ---
 
 ## 🛠️ Detailed Build & Run
