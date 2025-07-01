@@ -1,0 +1,85 @@
+{
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "python.terminal.activateEnvironment": false,
+    "files.associations": {
+        "*.launch": "xml",
+        "*.urdf": "xml",
+        "*.xacro": "xml",
+        "*.sdf": "xml",
+        "*.world": "xml",
+        "*.msg": "msg",
+        "*.srv": "msg",
+        "*.action": "msg"
+    },
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.installPrefix": "${workspaceFolder}/install",
+    "cmake.sourceDirectory": "${workspaceFolder}/src",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/src/**",
+        "/opt/ros/humble/include/**",
+        "/usr/include/**"
+    ],
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "bash",
+            "args": ["-l"],
+            "env": {
+                "ROS_DOMAIN_ID": "0"
+            }
+        },
+        "ROS2 Terminal": {
+            "path": "bash",
+            "args": [
+                "-c",
+                "source /opt/ros/humble/setup.bash && source ~/ros2_tractobots/install/setup.bash 2>/dev/null || true && exec bash"
+            ]
+        }
+    },
+    "files.exclude": {
+        "**/build": true,
+        "**/install": true,
+        "**/log": true,
+        "**/.colcon_install_layout": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true
+    },
+    "search.exclude": {
+        "**/build": true,
+        "**/install": true,
+        "**/log": true
+    },
+    "shellcheck.enable": false,
+    "shellcheck.useWSL": true,
+    "bashIde.shellcheckPath": "/usr/bin/shellcheck",
+    "editor.rulers": [80, 100],
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true
+    },
+    "[xml]": {
+        "editor.formatOnSave": true
+    },
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    }
+}

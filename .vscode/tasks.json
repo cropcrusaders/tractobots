@@ -1,0 +1,313 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "� Fix All Problems",
+			"type": "shell",
+			"command": "./fix_all_problems.sh",
+			"group": "build",
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			},
+			"problemMatcher": [],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
+		},
+		{
+			"label": "�🚜 Build Tractobots (Full Setup)",
+			"type": "shell",
+			"command": "./quick_setup.sh",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"problemMatcher": [
+				"$gcc",
+				{
+					"owner": "cmake",
+					"fileLocation": "absolute",
+					"pattern": {
+						"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+						"file": 1,
+						"line": 2,
+						"column": 3,
+						"severity": 4,
+						"message": 5
+					}
+				}
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
+		},
+		{
+			"label": "🔨 Colcon Build Only",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source /opt/ros/humble/setup.bash && cd ~/ros2_tractobots && colcon build --symlink-install --event-handlers console_direct+"
+			],
+			"group": "build",
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": [
+				"$gcc",
+				{
+					"owner": "colcon",
+					"fileLocation": "absolute",
+					"pattern": [
+						{
+							"regexp": "^Starting >>> (.+)$",
+							"file": 1
+						},
+						{
+							"regexp": "^(.+):(\\d+):(\\d+):\\s+(error|warning|note):\\s+(.+)$",
+							"file": 1,
+							"line": 2,
+							"column": 3,
+							"severity": 4,
+							"message": 5,
+							"loop": true
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "🧪 Test Tractor System",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && ros2 run tractobots_bringup system_test"
+			],
+			"group": "test",
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared"
+			},
+			"dependsOn": "🔨 Colcon Build Only",
+			"problemMatcher": []
+		},
+		{
+			"label": "🚀 Launch Tractor Bringup",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && ros2 launch tractobots_launchers bringup.launch.py"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"group": "tractor-system"
+			},
+			"dependsOn": "🔨 Colcon Build Only",
+			"problemMatcher": []
+		},
+		{
+			"label": "🎮 Start Joy Node",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && ros2 run joy joy_node"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"focus": false,
+				"panel": "dedicated",
+				"group": "tractor-control"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🧭 Start Navigation Driver",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && ros2 run tractobots_navigation driver"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "dedicated",
+				"group": "tractor-control"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🗺️ Launch MapViz Visualization",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"export DISPLAY=:0 && source ~/ros2_tractobots/install/setup.bash && ros2 launch tractobots_launchers mapviz.launch.py"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "silent",
+				"focus": false,
+				"panel": "dedicated",
+				"group": "visualization"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🛑 Stop All Tractor Nodes",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"pkill -f 'ros2|python3.*ros' || echo 'No ROS nodes to stop'"
+			],
+			"group": "build",
+			"isBackground": false,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "🎨 Launch Enhanced GUI",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && ros2 run tractobots_mission_ui enhanced_gui"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"group": "gui"
+			},
+			"dependsOn": "🔨 Colcon Build Only",
+			"problemMatcher": []
+		},
+		{
+			"label": "🌐 Launch Web Dashboard",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && echo '🌐 Starting web dashboard at http://localhost:5000' && ros2 run tractobots_mission_ui web_dashboard"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"group": "gui"
+			},
+			"dependsOn": "🔨 Colcon Build Only",
+			"problemMatcher": []
+		},
+		{
+			"label": "💎 Launch Qt Professional GUI",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && ros2 run tractobots_mission_ui qt_gui"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"group": "gui"
+			},
+			"dependsOn": "🔨 Colcon Build Only",
+			"problemMatcher": []
+		},
+		{
+			"label": "📱 Launch Simple GUI",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && ros2 run tractobots_mission_ui mission_gui_node"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"group": "gui"
+			},
+			"dependsOn": "🔨 Colcon Build Only",
+			"problemMatcher": []
+		},
+		{
+			"label": "🚀 Launch Full System + GUI",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source ~/ros2_tractobots/install/setup.bash && echo '🚜 Starting full system with GUI...' && (ros2 launch tractobots_launchers bringup.launch.py &) && sleep 3 && ros2 run tractobots_mission_ui enhanced_gui"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "dedicated",
+				"group": "full-system"
+			},
+			"dependsOn": "🔨 Colcon Build Only",
+			"problemMatcher": []
+		}
+	]
+}

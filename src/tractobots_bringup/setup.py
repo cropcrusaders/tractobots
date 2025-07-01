@@ -18,4 +18,9 @@ setup(
     maintainer_email='nckbass218@gmail.com',
     description='Launch files for bringing up Tractobots sensors and safety nodes',
     license='GPLv3',
+    entry_points={
+        'console_scripts': [
+            'system_test = tractobots_bringup.system_test:main',
+        ],
+    },
 )

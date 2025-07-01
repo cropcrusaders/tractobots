@@ -1,0 +1,37 @@
+# VS Code Python Import Issues - Ignore List
+# These imports are available in WSL/ROS2 but not in Windows
+
+# ROS2 Core
+rclpy
+rclpy.*
+
+# ROS2 Messages
+std_msgs
+std_msgs.*
+sensor_msgs
+sensor_msgs.*
+geometry_msgs
+geometry_msgs.*
+nav_msgs
+nav_msgs.*
+visualization_msgs
+visualization_msgs.*
+tf2_ros
+tf2_ros.*
+
+# ROS2 Launch System
+launch
+launch.*
+launch_ros
+launch_ros.*
+
+# Robot Localization
+robot_localization
+robot_localization.*
+
+# Build Tools (available in WSL)
+setuptools
+ament_cmake
+ament_cmake.*
+colcon_core
+colcon_core.*

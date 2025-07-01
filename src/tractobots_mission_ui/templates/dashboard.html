@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚜 Tractobots Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 20px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-indicator {
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .status-ready { background: #4CAF50; }
+        .status-active { background: #2196F3; }
+        .status-emergency { background: #f44336; }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+            color: #00ff88;
+            font-size: 1.5em;
+        }
+
+        .sensor-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .data-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .data-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .data-label {
+            font-size: 0.9em;
+            color: #cccccc;
+            margin-top: 5px;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #da190b);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ff9800, #e68900);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2196F3, #0b7dda);
+            color: white;
+        }
+
+        .manual-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            aspect-ratio: 1;
+            margin-top: 20px;
+        }
+
+        .manual-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(45deg, #2196F3, #0b7dda);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .manual-btn:hover {
+            background: linear-gradient(45deg, #1976D2, #0b5394);
+            transform: scale(1.05);
+        }
+
+        .manual-btn:active {
+            transform: scale(0.95);
+        }
+
+        .manual-stop {
+            background: linear-gradient(45deg, #f44336, #da190b) !important;
+        }
+
+        .forward { grid-column: 2; grid-row: 1; }
+        .left { grid-column: 1; grid-row: 2; }
+        .stop { grid-column: 2; grid-row: 2; }
+        .right { grid-column: 3; grid-row: 2; }
+        .backward { grid-column: 2; grid-row: 3; }
+
+        .gps-map {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sensor-data {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🚜 TRACTOBOTS MISSION CONTROL</h1>
+            <div id="status-indicator" class="status-indicator status-ready">🟡 READY</div>
+            <div id="mission-time" style="margin-top: 10px; font-size: 1.2em;">Mission Time: 00:00:00</div>
+        </div>
+
+        <div class="panel">
+            <h2>📊 Sensor Data</h2>
+            <div class="sensor-data">
+                <div class="data-item">
+                    <div id="speed-value" class="data-value">0.0</div>
+                    <div class="data-label">Speed (m/s)</div>
+                </div>
+                <div class="data-item">
+                    <div id="heading-value" class="data-value">0.0°</div>
+                    <div class="data-label">Heading</div>
+                </div>
+                <div class="data-item">
+                    <div id="gps-lat" class="data-value">0.000000</div>
+                    <div class="data-label">Latitude</div>
+                </div>
+                <div class="data-item">
+                    <div id="gps-lon" class="data-value">0.000000</div>
+                    <div class="data-label">Longitude</div>
+                </div>
+            </div>
+            
+            <div class="gps-map">
+                <h3>🗺️ GPS Location</h3>
+                <p id="gps-coordinates">Waiting for GPS data...</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>🎮 Mission Control</h2>
+            
+            <div class="control-grid">
+                <button class="btn btn-primary" onclick="startMission()">🚀 START MISSION</button>
+                <button class="btn btn-warning" onclick="stopMission()">⏹️ STOP MISSION</button>
+                <button class="btn btn-secondary" onclick="pauseMission()">⏸️ PAUSE</button>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #ff4444;">🚨 Emergency Controls</h3>
+            <div class="control-grid">
+                <button class="btn btn-danger" onclick="triggerEmergency()">🛑 EMERGENCY STOP</button>
+                <button class="btn btn-secondary" onclick="resetEmergency()">🔄 RESET E-STOP</button>
+                <button class="btn btn-secondary" onclick="systemCheck()">🔧 SYSTEM CHECK</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>🕹️ Manual Control</h2>
+            <p style="margin-bottom: 20px; color: #cccccc;">Use these controls for manual tractor operation</p>
+            
+            <div class="manual-controls">
+                <button class="manual-btn forward" onmousedown="manualControl(1, 0)" onmouseup="manualControl(0, 0)">⬆️<br>FORWARD</button>
+                <button class="manual-btn left" onmousedown="manualControl(0, 1)" onmouseup="manualControl(0, 0)">⬅️<br>LEFT</button>
+                <button class="manual-btn stop manual-stop" onclick="manualControl(0, 0)">⏹️<br>STOP</button>
+                <button class="manual-btn right" onmousedown="manualControl(0, -1)" onmouseup="manualControl(0, 0)">➡️<br>RIGHT</button>
+                <button class="manual-btn backward" onmousedown="manualControl(-1, 0)" onmouseup="manualControl(0, 0)">⬇️<br>BACKWARD</button>
+            </div>
+        </div>
+
+        <div class="panel" style="grid-column: 1 / -1;">
+            <h2>📈 System Log</h2>
+            <div id="log-container" style="background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 10px; height: 200px; overflow-y: auto; font-family: monospace;">
+                <div class="log-entry">🚜 Tractobots System Initialized</div>
+                <div class="log-entry">📡 Waiting for sensor data...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize WebSocket connection
+        const socket = io();
+        let missionStartTime = null;
+
+        // Socket event handlers
+        socket.on('connect', function() {
+            addLogEntry('🔗 Connected to Tractobots system');
+        });
+
+        socket.on('disconnect', function() {
+            addLogEntry('❌ Disconnected from system');
+        });
+
+        socket.on('sensor_data', function(data) {
+            updateSensorDisplay(data);
+        });
+
+        socket.on('status_update', function(data) {
+            updateStatus(data);
+        });
+
+        // Update functions
+        function updateSensorDisplay(data) {
+            if (data.type === 'speed') {
+                document.getElementById('speed-value').textContent = data.data.toFixed(2);
+            } else if (data.type === 'heading') {
+                document.getElementById('heading-value').textContent = data.data.toFixed(1) + '°';
+            } else if (data.type === 'gps') {
+                document.getElementById('gps-lat').textContent = data.data.lat.toFixed(6);
+                document.getElementById('gps-lon').textContent = data.data.lon.toFixed(6);
+                document.getElementById('gps-coordinates').textContent = 
+                    `${data.data.lat.toFixed(6)}, ${data.data.lon.toFixed(6)} (Alt: ${data.data.alt.toFixed(1)}m)`;
+            }
+        }
+
+        function updateStatus(data) {
+            const indicator = document.getElementById('status-indicator');
+            
+            if (data.emergency_stop) {
+                indicator.className = 'status-indicator status-emergency';
+                indicator.textContent = '🔴 EMERGENCY STOP';
+            } else if (data.mission_active) {
+                indicator.className = 'status-indicator status-active';
+                indicator.textContent = '🟢 MISSION ACTIVE';
+                if (!missionStartTime) missionStartTime = Date.now();
+            } else {
+                indicator.className = 'status-indicator status-ready';
+                indicator.textContent = '🟡 READY';
+                missionStartTime = null;
+            }
+        }
+
+        function addLogEntry(message) {
+            const logContainer = document.getElementById('log-container');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Control functions
+        async function startMission() {
+            const response = await fetch('/api/mission/start', { method: 'POST' });
+            const result = await response.json();
+            addLogEntry(result.message);
+        }
+
+        async function stopMission() {
+            const response = await fetch('/api/mission/stop', { method: 'POST' });
+            const result = await response.json();
+            addLogEntry(result.message);
+        }
+
+        async function pauseMission() {
+            addLogEntry('⏸️ Mission pause requested');
+            // Implement pause logic
+        }
+
+        async function triggerEmergency() {
+            const response = await fetch('/api/emergency/trigger', { method: 'POST' });
+            const result = await response.json();
+            addLogEntry('🚨 ' + result.message);
+        }
+
+        async function resetEmergency() {
+            const response = await fetch('/api/emergency/reset', { method: 'POST' });
+            const result = await response.json();
+            addLogEntry(result.message);
+        }
+
+        async function systemCheck() {
+            addLogEntry('🔧 Running system diagnostics...');
+            const response = await fetch('/api/status');
+            const data = await response.json();
+            addLogEntry(`📊 System Status: ${data.status || 'Unknown'}`);
+        }
+
+        async function manualControl(linear, angular) {
+            await fetch('/api/manual', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ linear_x: linear, angular_z: angular })
+            });
+        }
+
+        // Mission timer
+        function updateMissionTimer() {
+            if (missionStartTime) {
+                const elapsed = Math.floor((Date.now() - missionStartTime) / 1000);
+                const hours = Math.floor(elapsed / 3600);
+                const minutes = Math.floor((elapsed % 3600) / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('mission-time').textContent = 
+                    `Mission Time: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById('mission-time').textContent = 'Mission Time: 00:00:00';
+            }
+        }
+
+        // Update timer every second
+        setInterval(updateMissionTimer, 1000);
+
+        // Initial log entries
+        addLogEntry('🌐 Web dashboard loaded');
+        addLogEntry('🚜 Ready for autonomous operations');
+    </script>
+</body>
+</html>

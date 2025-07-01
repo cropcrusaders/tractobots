@@ -1,0 +1,55 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🧪 Debug System Test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/tractobots_bringup/tractobots_bringup/system_test.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "ROS_DOMAIN_ID": "0"
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "🔨 Colcon Build Only"
+        },
+        {
+            "name": "🧭 Debug Navigation Driver",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/tractobots_navigation/tractobots_navigation/driver.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "ROS_DOMAIN_ID": "0"
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "🔨 Colcon Build Only"
+        },
+        {
+            "name": "🎮 Debug GPS Parser",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/tractobots_robot_localization/src/tractobots_robot_localization/gps_parser.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}",
+                "ROS_DOMAIN_ID": "0"
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "🔨 Colcon Build Only"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "🚜 Launch Full Tractor System",
+            "configurations": [],
+            "preLaunchTask": "🚀 Launch Tractor Bringup",
+            "stopAll": true
+        }
+    ]
+}

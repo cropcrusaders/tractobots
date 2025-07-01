@@ -1,0 +1,39 @@
+{
+    "folders": [
+        {
+            "name": "🚜 Tractobots",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "terminal.integrated.cwd": "${workspaceFolder}",
+        "cmake.sourceDirectory": "${workspaceFolder}/src"
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": []
+    },
+    "launch": {
+        "version": "0.2.0", 
+        "configurations": []
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.vscode-pylance", 
+            "ms-python.debugpy",
+            "ms-vscode.cpptools",
+            "ms-vscode.cmake-tools",
+            "ajshort.msg",
+            "nonanonno.vscode-ros2",
+            "d-biehl.robotcode",
+            "github.copilot",
+            "ms-vscode.cpptools-extension-pack",
+            "althack.ament-task-provider",
+            "foxundermoon.shell-format"
+        ],
+        "unwantedRecommendations": [
+            "timonwong.shellcheck"
+        ]
+    }
+}

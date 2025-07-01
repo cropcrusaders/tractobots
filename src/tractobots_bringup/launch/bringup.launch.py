@@ -11,34 +11,47 @@ def generate_launch_description():
     robot_name_arg = DeclareLaunchArgument('robot_name', default_value='tractor1')
     robot_name = LaunchConfiguration('robot_name')
 
-    ins_launch = IncludeLaunchDescription(
+    # Robot description and TF tree
+    robot_description_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            PathJoinSubstitution([FindPackageShare('ros2-driver'), 'launch', 'ins_driver.launch.py'])
+            PathJoinSubstitution([FindPackageShare('tractobots_description'), 'launch', 'tractobots_tf_tree.launch.py'])
         )
     )
 
-    ekf_params = PathJoinSubstitution([
-        FindPackageShare('tractobots_bringup'), 'params', 'ekf.yaml'
-    ])
-    ekf_node = Node(
-        package='robot_localization',
-        executable='ekf_node',
-        name='ekf_localization_node',
-        output='screen',
-        parameters=[ekf_params]
+    # GPS parser and localization helpers
+    gps_parser = Node(
+        package='tractobots_robot_localization',
+        executable='gps_parser',
+        name='gps_parser',
+        output='screen'
     )
 
-    watchdog_launch = IncludeLaunchDescription(
+    imu_publisher = Node(
+        package='tractobots_robot_localization',
+        executable='imu_publisher', 
+        name='imu_publisher',
+        output='screen'
+    )
+
+    # EKF for sensor fusion
+    ekf_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            PathJoinSubstitution([FindPackageShare('iso_bus_watchdog'), 'launch', 'isobus_watchdog.launch.py'])
+            PathJoinSubstitution([FindPackageShare('tractobots_robot_localization'), 'launch', 'ekf.launch.py'])
         )
     )
 
-    group = GroupAction([
-        PushRosNamespace(robot_name),
-        ins_launch,
-        ekf_node,
-        watchdog_launch,
-    ])
+    # NavSat transform for GPS
+    navsat_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([FindPackageShare('tractobots_robot_localization'), 'launch', 'navsat.launch.py'])
+        )
+    )
 
-    return LaunchDescription([robot_name_arg, group])
+    return LaunchDescription([
+        robot_name_arg,
+        robot_description_launch,
+        gps_parser,
+        imu_publisher,
+        ekf_launch,
+        navsat_launch,
+    ])
