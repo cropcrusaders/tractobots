@@ -15,8 +15,8 @@ echo "📋 Detected Ubuntu codename: $OS_CODENAME"
 echo "📦 Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
-# Install dependencies
-echo "🔧 Installing dependencies..."
+# Install basic dependencies first
+echo "🔧 Installing basic dependencies..."
 sudo apt install -y \
   curl \
   gnupg2 \
@@ -27,9 +27,7 @@ sudo apt install -y \
   python3-pip \
   python3-dev \
   python3-setuptools \
-  python3-vcstool \
-  python3-rosdep \
-  python3-colcon-common-extensions
+  python3-vcstool
 
 # Enable universe repository
 sudo add-apt-repository -y universe
@@ -51,8 +49,10 @@ sudo apt update
 echo "🤖 Installing ROS2 Humble..."
 sudo apt install -y \
   ros-humble-desktop \
+  python3-rosdep \
+  python3-colcon-common-extensions \
   ros-humble-rmw-fastrtps-cpp \
-  ros-humble-rmw-cyclonedx-cpp \
+  ros-humble-rmw-cyclonedds-cpp \
   ros-humble-navigation2 \
   ros-humble-nav2-bringup \
   ros-humble-robot-localization \

@@ -15,12 +15,12 @@ fi
 
 # Check if ROS2 is sourced
 if [ -z "$ROS_DISTRO" ]; then
-    echo "⚠️  ROS2 not sourced. Attempting to source Humble..."
-    if [ -f "/opt/ros/humble/setup.bash" ]; then
-        source /opt/ros/humble/setup.bash
+    echo "⚠️  ROS2 not sourced. Attempting to source Jazzy..."
+    if [ -f "/opt/ros/jazzy/setup.bash" ]; then
+        source /opt/ros/jazzy/setup.bash
     else
-        echo "❌ ROS2 Humble not found. Please install it first:"
-        echo "   ./install_ros2_humble.sh"
+        echo "❌ ROS2 Jazzy not found. Please install it first:"
+        echo "   ./install_ros2_jazzy_noble.sh"
         exit 1
     fi
 fi

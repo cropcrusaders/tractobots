@@ -31,11 +31,11 @@ def check_ros2_installation():
         # Check if ROS2 distro is set
         ros_distro = os.environ.get('ROS_DISTRO')
         print_check("ROS_DISTRO environment variable", 
-                   ros_distro == 'humble', 
+                   ros_distro in ['humble', 'jazzy'], 
                    f"Found: {ros_distro}")
         
         # Check ROS2 installation path
-        ros_root = os.environ.get('ROS_ROOT', '/opt/ros/humble')
+        ros_root = os.environ.get('ROS_ROOT', f'/opt/ros/{ros_distro}' if ros_distro else '/opt/ros/jazzy')
         ros_exists = os.path.exists(ros_root)
         print_check("ROS2 installation directory", 
                    ros_exists, 
@@ -115,7 +115,8 @@ def check_vscode_configuration():
                            f"Set to: {python_path}")
                 
                 extra_paths = settings.get('python.analysis.extraPaths', [])
-                ros_path_found = any('/opt/ros/humble' in path for path in extra_paths)
+                ros_distro = os.environ.get('ROS_DISTRO')
+                ros_path_found = any(f'/opt/ros/{ros_distro}' in path for path in extra_paths) if ros_distro else any('/opt/ros/jazzy' in path for path in extra_paths)
                 print_check("ROS2 Python paths configured", 
                            ros_path_found,
                            f"Found {len(extra_paths)} extra paths")
@@ -256,7 +257,7 @@ def main():
     print_header("🎯 VERIFICATION COMPLETE")
     print("\n📋 NEXT STEPS:")
     print("1. Review any failed checks above")
-    print("2. If ROS2 imports fail, run 'source /opt/ros/humble/setup.bash' first")
+    print("2. If ROS2 imports fail, run 'source /opt/ros/jazzy/setup.bash' first")
     print("3. Try building with: Ctrl+Shift+P → 'Tasks: Run Task' → '🚜 Build Tractobots'")
     print("4. For Python import warnings in VS Code, they are cosmetic - see PYTHON_IMPORTS_FIX.md")
     print("5. Use F5 to debug Python nodes with the configured debug profiles")
