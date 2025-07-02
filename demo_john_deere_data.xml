@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OperationsCenterData>
+  <Farm name="Demo Farm" id="DEMO001">
+    <Field name="North Corn Field" id="NCF001" crop="corn" acres="45.2">
+      <Boundary>
+        <Point lat="42.123456" lon="-93.654321" />
+        <Point lat="42.124456" lon="-93.654321" />
+        <Point lat="42.124456" lon="-93.650321" />
+        <Point lat="42.123456" lon="-93.650321" />
+        <Point lat="42.123456" lon="-93.654321" />
+      </Boundary>
+      <GuidanceLines>
+        <Line id="AB001" type="ABLine">
+          <Point lat="42.123456" lon="-93.654321" heading="90.0" speed="5.2" />
+          <Point lat="42.123456" lon="-93.653321" heading="90.0" speed="5.2" />
+          <Point lat="42.123456" lon="-93.652321" heading="90.0" speed="5.2" />
+          <Point lat="42.123456" lon="-93.651321" heading="90.0" speed="5.2" />
+          <Point lat="42.123456" lon="-93.650321" heading="90.0" speed="5.2" />
+        </Line>
+        <Line id="AB002" type="ABLine">
+          <Point lat="42.123556" lon="-93.654321" heading="90.0" speed="5.2" />
+          <Point lat="42.123556" lon="-93.653321" heading="90.0" speed="5.2" />
+          <Point lat="42.123556" lon="-93.652321" heading="90.0" speed="5.2" />
+          <Point lat="42.123556" lon="-93.651321" heading="90.0" speed="5.2" />
+          <Point lat="42.123556" lon="-93.650321" heading="90.0" speed="5.2" />
+        </Line>
+      </GuidanceLines>
+    </Field>
+    <Field name="South Soybean Field" id="SSF001" crop="soybeans" acres="38.7">
+      <Boundary>
+        <Point lat="42.120456" lon="-93.654321" />
+        <Point lat="42.121456" lon="-93.654321" />
+        <Point lat="42.121456" lon="-93.651321" />
+        <Point lat="42.120456" lon="-93.651321" />
+        <Point lat="42.120456" lon="-93.654321" />
+      </Boundary>
+    </Field>
+  </Farm>
+</OperationsCenterData>

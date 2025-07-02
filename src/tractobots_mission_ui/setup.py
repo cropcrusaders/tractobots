@@ -38,6 +38,7 @@ setup(
             'shapefile_manager = tractobots_mission_ui.shapefile_manager:main',
             'shapefile_gui = tractobots_mission_ui.shapefile_gui:main',
             'field_boundary_service = tractobots_mission_ui.field_boundary_service:main',
+            'desktop_app = tractobots_mission_ui.desktop_app:main',
         ],
     },
 )

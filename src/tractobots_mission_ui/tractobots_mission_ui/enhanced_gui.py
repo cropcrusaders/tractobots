@@ -149,6 +149,32 @@ def create_modern_gui(node):
     root.geometry("800x600")
     root.configure(bg='#1a1a1a')
     
+    # Create menu bar
+    menubar = tk.Menu(root)
+    root.config(menu=menubar)
+    
+    # Field menu
+    field_menu = tk.Menu(menubar, tearoff=0)
+    menubar.add_cascade(label="Field Management", menu=field_menu)
+    field_menu.add_command(label="Load Shapefile...", command=lambda: open_shapefile_gui(root))
+    field_menu.add_command(label="Field Boundary Service", command=lambda: launch_field_service())
+    field_menu.add_separator()
+    field_menu.add_command(label="Export Field Data...", command=lambda: export_field_data())
+    
+    # Tools menu
+    tools_menu = tk.Menu(menubar, tearoff=0)
+    menubar.add_cascade(label="Tools", menu=tools_menu)
+    tools_menu.add_command(label="Launch Web Dashboard", command=lambda: launch_web_dashboard())
+    tools_menu.add_command(label="Launch Qt GUI", command=lambda: launch_qt_gui())
+    tools_menu.add_separator()
+    tools_menu.add_command(label="System Diagnostics", command=lambda: system_diagnostics())
+    
+    # Help menu
+    help_menu = tk.Menu(menubar, tearoff=0)
+    menubar.add_cascade(label="Help", menu=help_menu)
+    help_menu.add_command(label="User Guide", command=lambda: show_user_guide())
+    help_menu.add_command(label="About", command=lambda: show_about())
+    
     # Configure styles
     style = ttk.Style()
     style.theme_use('clam')
@@ -259,6 +285,117 @@ def create_modern_gui(node):
     update_display()
     
     return root
+
+
+def open_shapefile_gui(parent):
+    """Open the shapefile management GUI"""
+    try:
+        from .shapefile_gui import ShapefileGUI
+        shapefile_app = ShapefileGUI(parent)
+    except ImportError as e:
+        messagebox.showerror("Import Error", f"Could not import shapefile GUI: {e}")
+
+def launch_field_service():
+    """Launch the field boundary service"""
+    try:
+        import subprocess
+        subprocess.Popen(['ros2', 'run', 'tractobots_mission_ui', 'field_boundary_service'])
+        messagebox.showinfo("Service Launched", "Field boundary service started successfully!")
+    except Exception as e:
+        messagebox.showerror("Launch Error", f"Could not launch field service: {e}")
+
+def export_field_data():
+    """Export field data"""
+    messagebox.showinfo("Export", "Use Field Management -> Load Shapefile to access export options")
+
+def launch_web_dashboard():
+    """Launch web dashboard"""
+    try:
+        import subprocess
+        subprocess.Popen(['ros2', 'run', 'tractobots_mission_ui', 'web_dashboard'])
+        messagebox.showinfo("Dashboard Launched", "Web dashboard started at http://localhost:5000")
+    except Exception as e:
+        messagebox.showerror("Launch Error", f"Could not launch web dashboard: {e}")
+
+def launch_qt_gui():
+    """Launch Qt GUI"""
+    try:
+        import subprocess
+        subprocess.Popen(['ros2', 'run', 'tractobots_mission_ui', 'qt_gui'])
+        messagebox.showinfo("Qt GUI Launched", "Qt GUI started successfully!")
+    except Exception as e:
+        messagebox.showerror("Launch Error", f"Could not launch Qt GUI: {e}")
+
+def system_diagnostics():
+    """Run system diagnostics"""
+    try:
+        import subprocess
+        subprocess.Popen(['python3', 'diagnose_problems.py'])
+        messagebox.showinfo("Diagnostics", "System diagnostics started in new window")
+    except Exception as e:
+        messagebox.showerror("Diagnostics Error", f"Could not run diagnostics: {e}")
+
+def show_user_guide():
+    """Show user guide"""
+    help_text = """
+🚜 TRACTOBOTS USER GUIDE
+
+FIELD MANAGEMENT:
+• Use Field Management -> Load Shapefile to import field boundaries
+• Supports .shp files from operation centers
+• Generates coverage paths automatically
+• Exports to ROS2 compatible formats
+
+MISSION CONTROL:
+• START MISSION: Begin autonomous operation
+• STOP MISSION: Pause current mission
+• EMERGENCY STOP: Immediate halt (safety critical)
+
+MANUAL CONTROL:
+• Use arrow buttons for manual driving
+• Only available when mission is stopped
+
+SYSTEM STATUS:
+• Green: Ready for operation
+• Yellow: Warning condition
+• Red: Error or emergency stop
+
+For detailed documentation, see:
+• GETTING_STARTED.md
+• GUI_GUIDE.md
+• VSCODE_BUILD_GUIDE.md
+    """
+    
+    help_window = tk.Toplevel()
+    help_window.title("User Guide")
+    help_window.geometry("600x500")
+    
+    text_widget = tk.Text(help_window, wrap=tk.WORD, padx=10, pady=10)
+    text_widget.pack(fill=tk.BOTH, expand=True)
+    text_widget.insert(tk.END, help_text)
+    text_widget.config(state=tk.DISABLED)
+
+def show_about():
+    """Show about dialog"""
+    about_text = """
+🚜 TRACTOBOTS AUTONOMOUS SYSTEM
+
+Version: 1.0.0
+Author: Nicholas Bass
+License: GPLv3
+
+Advanced autonomous tractor control system with:
+• ROS2 Jazzy integration
+• Shapefile field boundary support
+• Multiple GUI interfaces
+• Real-time sensor monitoring
+• Coverage path planning
+• Emergency safety systems
+
+For support and documentation:
+https://github.com/your-repo/tractobots
+    """
+    messagebox.showinfo("About Tractobots", about_text)
 
 
 def main(args=None):

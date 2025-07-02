@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Tractobots Field Management
+Comment=Desktop application for autonomous tractor field operations
+Exec=python3 /mnt/c/Users/nicholas/OneDrive/Documents/GitHub/tractobots/tractobots_desktop_app.py
+Icon=tractor
+Terminal=false
+Categories=Agriculture;Engineering;Science;
+Keywords=tractor;autonomous;farming;shapefile;gis;ros2;
+StartupNotify=true

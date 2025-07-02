@@ -1,0 +1,5 @@
+guidance_lines:
+  header:
+    frame_id: map
+    stamp: '2025-07-02T02:45:01.521016'
+  lines: []

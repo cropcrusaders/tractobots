@@ -51,25 +51,25 @@ def check_ros2_installation():
     
     # Check ROS_DISTRO
     ros_distro = os.environ.get('ROS_DISTRO')
-    distro_ok = ros_distro == 'humble'
+    distro_ok = ros_distro in ['humble', 'jazzy']
     print_status("ROS_DISTRO environment variable", distro_ok,
                 f"Current: {ros_distro or 'Not set'}",
-                "source /opt/ros/humble/setup.bash")
+                "source /opt/ros/jazzy/setup.bash")
     
     if not distro_ok:
-        problems.append("ROS_DISTRO not set to humble")
-        fixes.append("Run: source /opt/ros/humble/setup.bash")
+        problems.append("ROS_DISTRO not set to supported version")
+        fixes.append("Run: source /opt/ros/jazzy/setup.bash")
     
     # Check ROS2 packages directory
-    ros_dir = Path("/opt/ros/humble")
+    ros_dir = Path(f"/opt/ros/{ros_distro}" if ros_distro else "/opt/ros/jazzy")
     ros_dir_exists = ros_dir.exists()
     print_status("ROS2 installation directory", ros_dir_exists,
                 f"Path: {ros_dir}",
-                "./install_ros2_humble_noble.sh")
+                "./install_ros2_jazzy_noble.sh")
     
     if not ros_dir_exists:
         problems.append("ROS2 installation directory missing")
-        fixes.append("Run: ./install_ros2_humble_noble.sh")
+        fixes.append("Run: ./install_ros2_jazzy_noble.sh")
     
     return problems, fixes
 
@@ -247,6 +247,61 @@ def check_gui_dependencies():
     
     return problems, fixes
 
+def check_shapefile_dependencies():
+    """Check shapefile processing dependencies"""
+    print_header("Shapefile Dependencies Diagnosis")
+    
+    problems = []
+    fixes = []
+    
+    # Check shapefile packages
+    shapefile_packages = {
+        'geopandas': 'Shapefile reading and processing',
+        'shapely': 'Geometry operations',
+        'pyproj': 'Coordinate transformations',
+        'fiona': 'File I/O for shapefiles',
+        'yaml': 'YAML configuration export'
+    }
+    
+    for package, description in shapefile_packages.items():
+        try:
+            __import__(package)
+            available = True
+        except ImportError:
+            available = False
+        
+        print_status(f"Shapefile package: {package}", available,
+                    description,
+                    "pip3 install --user geopandas shapely pyproj fiona PyYAML")
+        
+        if not available:
+            problems.append(f"Shapefile package {package} missing")
+            fixes.append("Run: pip3 install --user geopandas shapely pyproj fiona PyYAML")
+    
+    # Check shapefile manager exists
+    shapefile_manager_path = Path("src/tractobots_mission_ui/tractobots_mission_ui/shapefile_manager.py")
+    manager_exists = shapefile_manager_path.exists()
+    print_status("Shapefile manager module", manager_exists,
+                f"Path: {shapefile_manager_path}",
+                "Shapefile integration module missing")
+    
+    if not manager_exists:
+        problems.append("Shapefile manager module missing")
+        fixes.append("Create shapefile_manager.py module")
+    
+    # Check field data directory
+    field_data_dir = Path("field_data")
+    field_dir_exists = field_data_dir.exists()
+    print_status("Field data directory", field_dir_exists,
+                f"Path: {field_data_dir}",
+                "mkdir field_data")
+    
+    if not field_dir_exists:
+        problems.append("Field data directory missing")
+        fixes.append("Run: mkdir field_data")
+    
+    return problems, fixes
+
 def generate_fix_plan(all_problems, all_fixes):
     """Generate a comprehensive fix plan"""
     print_header("🔧 COMPREHENSIVE FIX PLAN")
@@ -324,6 +379,10 @@ def main():
     all_fixes.append(fixes)
     
     problems, fixes = check_gui_dependencies()
+    all_problems.append(problems)
+    all_fixes.append(fixes)
+    
+    problems, fixes = check_shapefile_dependencies()
     all_problems.append(problems)
     all_fixes.append(fixes)
     

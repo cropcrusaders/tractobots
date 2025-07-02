@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "source": "john_deere_xml",
+    "original_file": "demo_john_deere_data.xml",
+    "imported_at": "2025-07-02T02:45:01.477659",
+    "converted_at": "2025-07-02T02:45:01.478422",
+    "format_version": "1.0"
+  },
+  "fields": [],
+  "guidance_lines": [],
+  "waypoints": [
+    {
+      "point_id": "point_0",
+      "lat": 42.123456,
+      "lon": -93.654321
+    },
+    {
+      "point_id": "point_1",
+      "lat": 42.124456,
+      "lon": -93.654321
+    },
+    {
+      "point_id": "point_2",
+      "lat": 42.124456,
+      "lon": -93.650321
+    },
+    {
+      "point_id": "point_3",
+      "lat": 42.123456,
+      "lon": -93.650321
+    },
+    {
+      "point_id": "point_4",
+      "lat": 42.123456,
+      "lon": -93.654321
+    },
+    {
+      "point_id": "point_5",
+      "lat": 42.123456,
+      "lon": -93.654321
+    },
+    {
+      "point_id": "point_6",
+      "lat": 42.123456,
+      "lon": -93.653321
+    },
+    {
+      "point_id": "point_7",
+      "lat": 42.123456,
+      "lon": -93.652321
+    },
+    {
+      "point_id": "point_8",
+      "lat": 42.123456,
+      "lon": -93.651321
+    },
+    {
+      "point_id": "point_9",
+      "lat": 42.123456,
+      "lon": -93.650321
+    },
+    {
+      "point_id": "point_10",
+      "lat": 42.123556,
+      "lon": -93.654321
+    },
+    {
+      "point_id": "point_11",
+      "lat": 42.123556,
+      "lon": -93.653321
+    },
+    {
+      "point_id": "point_12",
+      "lat": 42.123556,
+      "lon": -93.652321
+    },
+    {
+      "point_id": "point_13",
+      "lat": 42.123556,
+      "lon": -93.651321
+    },
+    {
+      "point_id": "point_14",
+      "lat": 42.123556,
+      "lon": -93.650321
+    },
+    {
+      "point_id": "point_15",
+      "lat": 42.120456,
+      "lon": -93.654321
+    },
+    {
+      "point_id": "point_16",
+      "lat": 42.121456,
+      "lon": -93.654321
+    },
+    {
+      "point_id": "point_17",
+      "lat": 42.121456,
+      "lon": -93.651321
+    },
+    {
+      "point_id": "point_18",
+      "lat": 42.120456,
+      "lon": -93.651321
+    },
+    {
+      "point_id": "point_19",
+      "lat": 42.120456,
+      "lon": -93.654321
+    }
+  ]
+}

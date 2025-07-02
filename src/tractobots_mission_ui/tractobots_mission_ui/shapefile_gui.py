@@ -36,6 +36,7 @@ class ShapefileGUI:
         # Initialize shapefile manager
         self.shapefile_manager = ShapefileFieldManager()
         self.current_fields_data = None
+        self.current_waypoints = None  # Add missing attribute
         
         self.setup_ui()
         
@@ -337,16 +338,17 @@ class ShapefileGUI:
             return
         
         # Add fields to tree
-        for field in self.current_fields_data['fields']:
-            values = (
-                field['field_id'],
-                field['attributes'].get('NAME', 'Unnamed'),
-                f"{field.get('area_hectares', 0):.2f}",
-                f"{field['center']['lat']:.6f}",
-                f"{field['center']['lon']:.6f}",
-                len(field['boundary_points'])
-            )
-            self.fields_tree.insert('', tk.END, values=values)
+        if 'fields' in self.current_fields_data:
+            for field in self.current_fields_data['fields']:
+                values = (
+                    field['field_id'],
+                    field['attributes'].get('NAME', 'Unnamed'),
+                    f"{field.get('area_hectares', 0):.2f}",
+                    f"{field['center']['lat']:.6f}",
+                    f"{field['center']['lon']:.6f}",
+                    len(field['boundary_points'])
+                )
+                self.fields_tree.insert('', tk.END, values=values)
     
     def select_field(self):
         """Select a field for path planning"""
@@ -376,10 +378,11 @@ class ShapefileGUI:
         
         # Find field data
         field_data = None
-        for field in self.current_fields_data['fields']:
-            if field['field_id'] == field_id:
-                field_data = field
-                break
+        if self.current_fields_data and 'fields' in self.current_fields_data:
+            for field in self.current_fields_data['fields']:
+                if field['field_id'] == field_id:
+                    field_data = field
+                    break
         
         if field_data:
             boundary_info = f"Field: {field_data['attributes'].get('NAME', field_id)}\n"
@@ -410,10 +413,11 @@ class ShapefileGUI:
         
         # Find field data
         field_data = None
-        for field in self.current_fields_data['fields']:
-            if field['field_id'] == field_id:
-                field_data = field
-                break
+        if self.current_fields_data and 'fields' in self.current_fields_data:
+            for field in self.current_fields_data['fields']:
+                if field['field_id'] == field_id:
+                    field_data = field
+                    break
         
         if field_data:
             info_window = tk.Toplevel(self.root)
@@ -455,26 +459,29 @@ class ShapefileGUI:
                 self.path_text.insert(tk.END, f"Implement width: {swath_width} m\n")
                 self.path_text.insert(tk.END, f"Overlap: {overlap*100}%\n\n")
                 
-                waypoints = self.shapefile_manager.generate_coverage_path(
-                    self.current_fields_data, self.current_selected_field, 
-                    swath_width, overlap
-                )
-                
-                if waypoints:
-                    self.current_waypoints = waypoints
-                    self.path_text.insert(tk.END, f"✅ Generated {len(waypoints)} waypoints\n\n")
+                if self.current_fields_data:
+                    waypoints = self.shapefile_manager.generate_coverage_path(
+                        self.current_fields_data, self.current_selected_field, 
+                        swath_width, overlap
+                    )
                     
-                    # Show first few waypoints
-                    for i, (lat, lon) in enumerate(waypoints[:10]):
-                        self.path_text.insert(tk.END, f"Waypoint {i+1}: {lat:.6f}, {lon:.6f}\n")
-                    
-                    if len(waypoints) > 10:
-                        self.path_text.insert(tk.END, f"... and {len(waypoints) - 10} more waypoints\n")
-                    
-                    self.status_var.set(f"Generated {len(waypoints)} waypoints")
+                    if waypoints:
+                        self.current_waypoints = waypoints
+                        self.path_text.insert(tk.END, f"✅ Generated {len(waypoints)} waypoints\n\n")
+                        
+                        # Show first few waypoints
+                        for i, (lat, lon) in enumerate(waypoints[:10]):
+                            self.path_text.insert(tk.END, f"Waypoint {i+1}: {lat:.6f}, {lon:.6f}\n")
+                        
+                        if len(waypoints) > 10:
+                            self.path_text.insert(tk.END, f"... and {len(waypoints) - 10} more waypoints\n")
+                        
+                        self.status_var.set(f"Generated {len(waypoints)} waypoints")
+                    else:
+                        self.path_text.insert(tk.END, "❌ Failed to generate coverage path\n")
+                        self.status_var.set("Failed to generate coverage path")
                 else:
-                    self.path_text.insert(tk.END, "❌ Failed to generate coverage path\n")
-                    self.status_var.set("Failed to generate coverage path")
+                    self.path_text.insert(tk.END, "❌ No field data loaded\n\n")
             
             except Exception as e:
                 self.path_text.insert(tk.END, f"❌ Error: {str(e)}\n")
@@ -561,20 +568,24 @@ class ShapefileGUI:
                             writer.writerow([i+1, lat, lon])
                 else:
                     # Export as JSON
-                    waypoints_data = {
-                        'field_id': self.current_selected_field,
-                        'waypoints': [{'lat': lat, 'lon': lon} for lat, lon in self.current_waypoints],
-                        'metadata': {
-                            'num_waypoints': len(self.current_waypoints),
-                            'swath_width': self.swath_width_var.get(),
-                            'overlap': self.overlap_var.get()
+                    if self.current_waypoints:
+                        waypoints_data = {
+                            'field_id': self.current_selected_field,
+                            'waypoints': [{'lat': lat, 'lon': lon} for lat, lon in self.current_waypoints],
+                            'metadata': {
+                                'num_waypoints': len(self.current_waypoints),
+                                'swath_width': self.swath_width_var.get(),
+                                'overlap': self.overlap_var.get()
+                            }
                         }
-                    }
-                    with open(file_path, 'w') as f:
-                        json.dump(waypoints_data, f, indent=2)
-                
-                self.export_text.insert(tk.END, f"✅ Exported {len(self.current_waypoints)} waypoints to {file_path}\n")
-                messagebox.showinfo("Success", f"Waypoints exported to {file_path}")
+                        with open(file_path, 'w') as f:
+                            json.dump(waypoints_data, f, indent=2)
+                        
+                        self.export_text.insert(tk.END, f"✅ Exported {len(self.current_waypoints)} waypoints to {file_path}\n")
+                        messagebox.showinfo("Success", f"Waypoints exported to {file_path}")
+                    else:
+                        self.export_text.insert(tk.END, "❌ No waypoints to export\n")
+                        messagebox.showerror("Error", "No waypoints to export")
             
             except Exception as e:
                 self.export_text.insert(tk.END, f"❌ Error exporting: {str(e)}\n")
