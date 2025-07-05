@@ -48,6 +48,18 @@ class JohnDeereGPSImporter:
         Returns:
             Dictionary containing imported GPS data
         """
+        return self.import_from_file(file_path)
+    
+    def import_from_file(self, file_path: str) -> Dict:
+        """
+        Import GPS data from various John Deere formats (alias for compatibility)
+        
+        Args:
+            file_path: Path to the GPS data file
+            
+        Returns:
+            Dictionary containing imported GPS data
+        """
         file_path = Path(file_path)
         
         if not file_path.exists():
@@ -632,7 +644,315 @@ class JohnDeereGPSImporter:
         
         logger.info(f"Created ROS2 guidance lines at {output_path}")
         return str(output_path)
-
+    
+    def export_to_gazebo_waypoints(self, gps_data: Dict, output_file: str = "jd_waypoints.yaml") -> str:
+        """
+        Export John Deere GPS lines to Gazebo-compatible waypoint format
+        
+        Args:
+            gps_data: GPS data dictionary from import_file
+            output_file: Path to output YAML file
+            
+        Returns:
+            Path to created waypoints file
+        """
+        if not gps_data or 'guidance_lines' not in gps_data:
+            raise ValueError("No GPS guidance lines available for export")
+            
+        logger.info(f"Exporting John Deere GPS lines to Gazebo waypoints: {output_file}")
+        
+        waypoints_data = {
+            'waypoints': [],
+            'field_info': {
+                'name': gps_data.get('field_name', 'john_deere_field'),
+                'generated_at': datetime.now().isoformat(),
+                'coordinate_system': 'gps',
+                'total_lines': len(gps_data['guidance_lines']),
+                'total_waypoints': 0
+            }
+        }
+        
+        waypoint_id = 0
+        for line_idx, line in enumerate(gps_data['guidance_lines']):
+            if 'points' not in line:
+                continue
+                
+            for point in line['points']:
+                if 'lat' in point and 'lon' in point:
+                    waypoint_data = {
+                        'id': waypoint_id,
+                        'line_id': line_idx,
+                        'position': {
+                            'x': self._convert_gps_to_meters(point['lon']),
+                            'y': self._convert_gps_to_meters(point['lat']),
+                            'z': 0.0
+                        },
+                        'orientation': {
+                            'x': 0.0,
+                            'y': 0.0,
+                            'z': 0.0,
+                            'w': 1.0
+                        },
+                        'speed': line.get('speed', 2.0),
+                        'action': 'move',
+                        'gps_coords': {
+                            'lat': point['lat'],
+                            'lon': point['lon']
+                        }
+                    }
+                    waypoints_data['waypoints'].append(waypoint_data)
+                    waypoint_id += 1
+        
+        waypoints_data['field_info']['total_waypoints'] = waypoint_id
+        
+        # Write to file
+        output_path = Path(output_file)
+        try:
+            import yaml
+            with open(output_path, 'w') as f:
+                yaml.dump(waypoints_data, f, default_flow_style=False)
+        except ImportError:
+            # Fallback to JSON if PyYAML not available
+            import json
+            output_path = output_path.with_suffix('.json')
+            with open(output_path, 'w') as f:
+                json.dump(waypoints_data, f, indent=2)
+            
+        logger.info(f"Gazebo waypoints file created: {output_path}")
+        return str(output_path)
+    
+    def export_to_gazebo_world(self, gps_data: Dict, output_file: str = "jd_field_world.sdf") -> str:
+        """
+        Export John Deere GPS field to Gazebo world format
+        
+        Args:
+            gps_data: GPS data dictionary from import_file
+            output_file: Path to output SDF world file
+            
+        Returns:
+            Path to created world file
+        """
+        if not gps_data:
+            raise ValueError("No GPS data available for export")
+            
+        logger.info(f"Exporting John Deere GPS field to Gazebo world: {output_file}")
+        
+        # Calculate field bounds from GPS data
+        all_points = []
+        if 'guidance_lines' in gps_data:
+            for line in gps_data['guidance_lines']:
+                if 'points' in line:
+                    for point in line['points']:
+                        if 'lat' in point and 'lon' in point:
+                            all_points.append([point['lon'], point['lat']])
+        
+        if not all_points:
+            raise ValueError("No GPS points available for field creation")
+        
+        # Convert to numpy array for easier calculation
+        import numpy as np
+        points_array = np.array(all_points)
+        min_x, min_y = points_array.min(axis=0)
+        max_x, max_y = points_array.max(axis=0)
+        
+        # Field dimensions (convert GPS to meters)
+        field_width = self._convert_gps_to_meters(max_x - min_x)
+        field_height = self._convert_gps_to_meters(max_y - min_y)
+        
+        # Ensure minimum size
+        field_width = max(field_width, 100)
+        field_height = max(field_height, 100)
+        
+        # Generate SDF content
+        sdf_content = f'''<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="john_deere_field">
+    <!-- Ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    
+    <!-- Sun -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    
+    <!-- Field base -->
+    <model name="field_base">
+      <pose>0 0 0.01 0 0 0</pose>
+      <static>true</static>
+      <link name="field_link">
+        <collision name="field_collision">
+          <geometry>
+            <box>
+              <size>{field_width} {field_height} 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="field_visual">
+          <geometry>
+            <box>
+              <size>{field_width} {field_height} 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.4 0.7 0.3 1</ambient>
+            <diffuse>0.4 0.7 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- GPS guidance lines -->
+'''
+        
+        # Add guidance lines as visual markers
+        if 'guidance_lines' in gps_data:
+            for line_idx, line in enumerate(gps_data['guidance_lines']):
+                if 'points' not in line or len(line['points']) < 2:
+                    continue
+                
+                points = line['points']
+                for i in range(len(points) - 1):
+                    start_point = points[i]
+                    end_point = points[i + 1]
+                    
+                    if 'lat' not in start_point or 'lon' not in start_point:
+                        continue
+                    if 'lat' not in end_point or 'lon' not in end_point:
+                        continue
+                    
+                    # Convert GPS to meters
+                    start_x = self._convert_gps_to_meters(start_point['lon'])
+                    start_y = self._convert_gps_to_meters(start_point['lat'])
+                    end_x = self._convert_gps_to_meters(end_point['lon'])
+                    end_y = self._convert_gps_to_meters(end_point['lat'])
+                    
+                    # Calculate line position and orientation
+                    mid_x = (start_x + end_x) / 2
+                    mid_y = (start_y + end_y) / 2
+                    
+                    # Calculate line length and angle
+                    dx = end_x - start_x
+                    dy = end_y - start_y
+                    length = np.sqrt(dx**2 + dy**2)
+                    angle = np.arctan2(dy, dx)
+                    
+                    sdf_content += f'''
+    <!-- Guidance line {line_idx} segment {i} -->
+    <model name="guidance_line_{line_idx}_{i}">
+      <pose>{mid_x} {mid_y} 0.1 0 0 {angle}</pose>
+      <static>true</static>
+      <link name="guidance_link">
+        <collision name="guidance_collision">
+          <geometry>
+            <box>
+              <size>{length} 0.05 0.2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="guidance_visual">
+          <geometry>
+            <box>
+              <size>{length} 0.05 0.2</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>
+            <diffuse>0 1 0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+'''
+        
+        # Add waypoint markers
+        waypoint_idx = 0
+        if 'guidance_lines' in gps_data:
+            for line in gps_data['guidance_lines']:
+                if 'points' in line:
+                    for point in line['points']:
+                        if 'lat' in point and 'lon' in point:
+                            x = self._convert_gps_to_meters(point['lon'])
+                            y = self._convert_gps_to_meters(point['lat'])
+                            
+                            sdf_content += f'''
+    <!-- Waypoint {waypoint_idx} -->
+    <model name="waypoint_{waypoint_idx}">
+      <pose>{x} {y} 0.3 0 0 0</pose>
+      <static>true</static>
+      <link name="waypoint_link">
+        <collision name="waypoint_collision">
+          <geometry>
+            <sphere>
+              <radius>0.3</radius>
+            </sphere>
+          </geometry>
+        </collision>
+        <visual name="waypoint_visual">
+          <geometry>
+            <sphere>
+              <radius>0.3</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>
+            <diffuse>0 0 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+'''
+                            waypoint_idx += 1
+        
+        # Close the world
+        sdf_content += '''
+    <!-- Physics settings -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    
+    <!-- Scene settings -->
+    <scene>
+      <ambient>0.8 0.8 0.8 1</ambient>
+      <background>0.6 0.8 1.0</background>
+      <shadows>true</shadows>
+    </scene>
+    
+    <!-- Wind simulation -->
+    <wind>
+      <linear_velocity>2 0 0</linear_velocity>
+    </wind>
+    
+  </world>
+</sdf>
+'''
+        
+        # Write to file
+        output_path = Path(output_file)
+        with open(output_path, 'w') as f:
+            f.write(sdf_content)
+            
+        logger.info(f"Gazebo world file created: {output_path}")
+        return str(output_path)
+    
+    def _convert_gps_to_meters(self, gps_value: float) -> float:
+        """
+        Convert GPS coordinates to meters (simplified conversion)
+        
+        Args:
+            gps_value: GPS coordinate value
+            
+        Returns:
+            Value in meters
+        """
+        # Simple conversion for simulation purposes
+        # In real applications, use proper coordinate transformation
+        return gps_value * 111320  # Approximate meters per degree
+    
+    # ...existing code...
 def main():
     """Command line interface for John Deere GPS importer"""
     import argparse

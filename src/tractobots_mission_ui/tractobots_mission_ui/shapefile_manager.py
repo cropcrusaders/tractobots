@@ -11,6 +11,8 @@ import numpy as np
 from pathlib import Path
 from typing import List, Tuple, Dict, Optional
 import logging
+from datetime import datetime
+from datetime import datetime
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -333,6 +335,409 @@ class ShapefileFieldManager:
         except Exception as e:
             logger.error(f"Error generating coverage path: {e}")
             return None
+    
+    def add_field(self, field_name: str, boundary_points: List[Dict]) -> str:
+        """
+        Add a new field with boundary points
+        
+        Args:
+            field_name: Name of the field
+            boundary_points: List of coordinate dictionaries with 'lat' and 'lon' keys
+            
+        Returns:
+            Field ID for the added field
+        """
+        import uuid
+        field_id = str(uuid.uuid4())
+        
+        field_data = {
+            'field_id': field_id,
+            'name': field_name,
+            'boundary_points': boundary_points,
+            'geometry_type': 'Polygon',
+            'attributes': {
+                'name': field_name,
+                'created_at': datetime.now().isoformat()
+            }
+        }
+        
+        # Save field data to a file
+        field_file = self.shapefiles_dir / f"{field_id}_field.json"
+        with open(field_file, 'w') as f:
+            json.dump(field_data, f, indent=2)
+            
+        logger.info(f"Added field '{field_name}' with ID: {field_id}")
+        return field_id
+
+    def export_to_gazebo_world(self, fields_data: Dict, output_file: str = "field_world.sdf") -> str:
+        """
+        Export field boundaries to Gazebo world file format
+        
+        Args:
+            fields_data: Field boundary data from load_field_boundaries
+            output_file: Path to output SDF world file
+            
+        Returns:
+            Path to created world file
+        """
+        if not fields_data or not fields_data.get('fields'):
+            raise ValueError("No field boundaries loaded. Import a shapefile first.")
+            
+        logger.info(f"Exporting field boundaries to Gazebo world: {output_file}")
+        
+        # Generate SDF content
+        sdf_content = self._generate_sdf_world(fields_data)
+        
+        # Write to file
+        output_path = Path(output_file)
+        with open(output_path, 'w') as f:
+            f.write(sdf_content)
+            
+        logger.info(f"Gazebo world file created: {output_path}")
+        return str(output_path)
+    
+    def _generate_sdf_world(self, fields_data: Dict) -> str:
+        """Generate SDF world content from field boundaries"""
+        # Calculate field center and bounds
+        all_points = []
+        for field in fields_data['fields']:
+            if 'boundary_points' in field:
+                if isinstance(field['boundary_points'], list) and len(field['boundary_points']) > 0:
+                    if isinstance(field['boundary_points'][0], dict):
+                        # Single polygon
+                        for point in field['boundary_points']:
+                            all_points.append([point['lon'], point['lat']])
+                    else:
+                        # Multi-polygon
+                        for polygon in field['boundary_points']:
+                            for point in polygon:
+                                all_points.append([point['lon'], point['lat']])
+        
+        if not all_points:
+            raise ValueError("No field boundary points available")
+        
+        # Convert to numpy array for easier calculation
+        points_array = np.array(all_points)
+        min_x, min_y = points_array.min(axis=0)
+        max_x, max_y = points_array.max(axis=0)
+        
+        center_x = (min_x + max_x) / 2
+        center_y = (min_y + max_y) / 2
+        
+        # Field dimensions (scale down for visualization)
+        field_width = (max_x - min_x) * 100  # Scale to meters
+        field_height = (max_y - min_y) * 100
+        
+        # Ensure minimum size
+        field_width = max(field_width, 50)
+        field_height = max(field_height, 50)
+        
+        # Generate SDF content
+        sdf_content = f'''<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="tractobots_field">
+    <!-- Ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    
+    <!-- Sun -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    
+    <!-- Field base -->
+    <model name="field_base">
+      <pose>0 0 0.01 0 0 0</pose>
+      <static>true</static>
+      <link name="field_link">
+        <collision name="field_collision">
+          <geometry>
+            <box>
+              <size>{field_width} {field_height} 0.02</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="field_visual">
+          <geometry>
+            <box>
+              <size>{field_width} {field_height} 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.3 0.8 0.3 1</ambient>
+            <diffuse>0.3 0.8 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    
+    <!-- Field boundaries -->
+'''
+        
+        # Add field boundary markers
+        for field_idx, field in enumerate(fields_data['fields']):
+            if 'boundary_points' not in field:
+                continue
+                
+            boundary_points = field['boundary_points']
+            if isinstance(boundary_points[0], dict):
+                # Single polygon
+                coords = [[point['lon'] * 100, point['lat'] * 100] for point in boundary_points]
+                self._add_boundary_lines(sdf_content, coords, field_idx, 0)
+            else:
+                # Multi-polygon
+                for polygon_idx, polygon in enumerate(boundary_points):
+                    coords = [[point['lon'] * 100, point['lat'] * 100] for point in polygon]
+                    self._add_boundary_lines(sdf_content, coords, field_idx, polygon_idx)
+        
+        # Close the world
+        sdf_content += '''
+    <!-- Physics settings -->
+    <physics type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    
+    <!-- Scene settings -->
+    <scene>
+      <ambient>0.8 0.8 0.8 1</ambient>
+      <background>0.7 0.7 1.0</background>
+      <shadows>true</shadows>
+    </scene>
+    
+    <!-- Wind simulation -->
+    <wind>
+      <linear_velocity>1 0 0</linear_velocity>
+    </wind>
+    
+  </world>
+</sdf>
+'''
+        
+        return sdf_content
+    
+    def _add_boundary_lines(self, sdf_content: str, coords: List[List[float]], field_idx: int, polygon_idx: int):
+        """Add boundary lines to SDF content"""
+        for j in range(len(coords)):
+            start_point = coords[j]
+            end_point = coords[(j + 1) % len(coords)]  # Wrap around to first point
+            
+            # Calculate line position and orientation
+            mid_x = (start_point[0] + end_point[0]) / 2
+            mid_y = (start_point[1] + end_point[1]) / 2
+            
+            # Calculate line length and angle
+            dx = end_point[0] - start_point[0]
+            dy = end_point[1] - start_point[1]
+            length = np.sqrt(dx**2 + dy**2)
+            angle = np.arctan2(dy, dx)
+            
+            sdf_content += f'''
+    <!-- Boundary line {field_idx}_{polygon_idx}_{j} -->
+    <model name="boundary_{field_idx}_{polygon_idx}_{j}">
+      <pose>{mid_x} {mid_y} 0.5 0 0 {angle}</pose>
+      <static>true</static>
+      <link name="boundary_link">
+        <collision name="boundary_collision">
+          <geometry>
+            <box>
+              <size>{length} 0.1 1.0</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="boundary_visual">
+          <geometry>
+            <box>
+              <size>{length} 0.1 1.0</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.4 0.2 1</ambient>
+            <diffuse>0.8 0.4 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+'''
+    
+    def export_to_gazebo_waypoints(self, waypoints_list: List[Tuple[float, float]], output_file: str = "field_waypoints.yaml") -> str:
+        """
+        Export waypoints to Gazebo-compatible format
+        
+        Args:
+            waypoints_list: List of waypoint coordinates [(lat, lon), ...]
+            output_file: Path to output YAML file
+            
+        Returns:
+            Path to created waypoints file
+        """
+        if not waypoints_list:
+            logger.warning("No waypoints provided for export.")
+            return output_file
+        
+        waypoints_data = {
+            'waypoints': [],
+            'field_info': {
+                'name': 'tractobots_field',
+                'generated_at': datetime.now().isoformat(),
+                'coordinate_system': 'local',
+                'total_waypoints': len(waypoints_list)
+            }
+        }
+        
+        for i, (lat, lon) in enumerate(waypoints_list):
+            waypoint_data = {
+                'id': i,
+                'position': {
+                    'x': float(lon * 100),  # Scale to meters
+                    'y': float(lat * 100),
+                    'z': 0.0
+                },
+                'orientation': {
+                    'x': 0.0,
+                    'y': 0.0,
+                    'z': 0.0,
+                    'w': 1.0
+                },
+                'speed': 2.0,
+                'action': 'move'
+            }
+            waypoints_data['waypoints'].append(waypoint_data)
+        
+        # Write to file
+        output_path = Path(output_file)
+        try:
+            import yaml
+            with open(output_path, 'w') as f:
+                yaml.dump(waypoints_data, f, default_flow_style=False)
+        except ImportError:
+            # Fallback to JSON if PyYAML not available
+            import json
+            output_path = output_path.with_suffix('.json')
+            with open(output_path, 'w') as f:
+                json.dump(waypoints_data, f, indent=2)
+            
+        logger.info(f"Gazebo waypoints file created: {output_path}")
+        return str(output_path)
+    
+    def export_to_gazebo_launch(self, output_file: str = "field_simulation.launch.py") -> str:
+        """
+        Export a complete Gazebo launch file with field and waypoints
+        
+        Args:
+            output_file: Path to output launch file
+            
+        Returns:
+            Path to created launch file
+        """
+        launch_content = '''#!/usr/bin/env python3
+
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, ExecuteProcess
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    """Generate launch description for Tractobots field simulation"""
+    
+    # Get package directory
+    pkg_dir = get_package_share_directory('tractobots_gazebo')
+    
+    # World file
+    world_file = os.path.join(pkg_dir, 'worlds', 'field_world.sdf')
+    
+    # Declare launch arguments
+    world_arg = DeclareLaunchArgument(
+        'world',
+        default_value=world_file,
+        description='Path to world file'
+    )
+    
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use simulation time'
+    )
+    
+    # Gazebo simulation
+    gazebo_sim = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch'),
+            '/gz_sim.launch.py'
+        ]),
+        launch_arguments={
+            'gz_args': LaunchConfiguration('world')
+        }.items()
+    )
+    
+    # ROS-Gazebo bridge
+    ros_gz_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
+            '/tf@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V',
+            '/tf_static@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V',
+            '/odom@nav_msgs/msg/Odometry[ignition.msgs.Odometry',
+            '/scan@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan',
+            '/imu@sensor_msgs/msg/Imu[ignition.msgs.IMU',
+            '/gps@sensor_msgs/msg/NavSatFix[ignition.msgs.NavSat',
+            '/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist'
+        ],
+        parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time')
+        }],
+        output='screen'
+    )
+    
+    # Robot state publisher
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time')
+        }],
+        output='screen'
+    )
+    
+    # RViz
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time')
+        }],
+        output='screen'
+    )
+    
+    return LaunchDescription([
+        world_arg,
+        use_sim_time_arg,
+        gazebo_sim,
+        ros_gz_bridge,
+        robot_state_publisher,
+        rviz_node
+    ])
+'''
+        
+        output_path = Path(output_file)
+        with open(output_path, 'w') as f:
+            f.write(launch_content)
+            
+        # Make executable
+        os.chmod(output_path, 0o755)
+        
+        logger.info(f"Gazebo launch file created: {output_path}")
+        return str(output_path)
+
+# Alias for backward compatibility
+ShapefileManager = ShapefileFieldManager
 
 def install_dependencies():
     """Install required dependencies for shapefile processing"""
