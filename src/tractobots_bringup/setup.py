@@ -15,7 +15,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='Nicholas Bass',
-    maintainer_email='nckbass218@gmail.com',
+    maintainer_email='nicholasbass@crop-crusaders.com',
     description='Launch files for bringing up Tractobots sensors and safety nodes',
     license='GPLv3',
     entry_points={

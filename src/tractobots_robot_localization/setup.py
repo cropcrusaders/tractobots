@@ -23,7 +23,7 @@ setup(
     ],
     zip_safe=True,
     maintainer='Nicholas Bass',
-    maintainer_email='nckbass218@gmail.com',
+    maintainer_email='nicholasbass@crop-crusaders.com',
     description='Helper nodes (GPS parser, IMU republisher, pose transformer) '
                 'that wrap the robot_localization stack for Tractobots.',
     license='GPLv3',

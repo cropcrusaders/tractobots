@@ -24,7 +24,7 @@ setup(
     ],
     zip_safe=True,
     maintainer='Nicholas Bass',
-    maintainer_email='nckbass218@gmail.com',
+    maintainer_email='nicholasbass@crop-crusaders.com',
     description='Modern GUI interfaces for Tractobots mission control',
     license='GPLv3',
     entry_points={

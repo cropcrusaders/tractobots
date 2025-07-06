@@ -1,0 +1,59 @@
+[project]
+name = "tractobots"
+version = "2.1.0"
+description = "Professional autonomous agriculture platform - ROS 2 Jazzy + Windows Dashboard + Comprehensive Tooling"
+readme = "README.md"
+license = {text = "GPLv3"}
+authors = [
+    {name = "Nicholas Bass", email = "nicholasbass@crop-crusaders.com"}
+]
+maintainers = [
+    {name = "Nicholas Bass", email = "nicholasbass@crop-crusaders.com"}
+]
+keywords = ["agriculture", "autonomous", "ros2", "precision-farming", "robotics", "tractors"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Manufacturing",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "rclpy",
+    "sensor-msgs",
+    "geometry-msgs",
+    "nav-msgs",
+    "std-msgs",
+    "tf2-ros",
+    "tf2-geometry-msgs",
+    "pyserial",
+    "numpy",
+    "scipy"
+]
+
+[project.urls]
+Homepage = "https://github.com/your-username/tractobots"
+Documentation = "https://github.com/your-username/tractobots/blob/master/README.md"
+Repository = "https://github.com/your-username/tractobots.git"
+Issues = "https://github.com/your-username/tractobots/issues"
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["tractobots*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

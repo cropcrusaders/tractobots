@@ -469,7 +469,7 @@ cp scripts/autostart.sh /etc/init.d/
 ### Getting Help
 - **📋 GitHub Issues**: Bug reports and feature requests
 - **💬 Discussions**: Community Q&A and project discussions  
-- **📧 Email Support**: maintainer@tractobots.dev (security issues)
+- **📧 Email Support**: nicholasbass@crop-crusaders.com (security issues)
 - **📚 Documentation**: Comprehensive guides in `/docs` directory
 
 ### Contributing
@@ -538,6 +538,17 @@ This project is licensed under the **MIT License** - see [LICENSE](LICENSE) file
 - 🧠 AI-powered crop monitoring and yield prediction  
 - 🌐 Comprehensive field management platform
 - 🚀 Commercial deployment at scale
+
+---
+
+## 👤 Maintainer
+
+**Nicholas Bass**  
+📧 Email: [nicholasbass@crop-crusaders.com](mailto:nicholasbass@crop-crusaders.com)  
+🏢 Organization: Crop Crusaders  
+🚜 Role: Lead Developer & Project Maintainer
+
+For technical support, bug reports, or contribution questions, please contact via email or open an issue on GitHub.
 
 ---
 

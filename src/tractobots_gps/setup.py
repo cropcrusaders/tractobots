@@ -14,7 +14,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='Nicholas Bass',
-    maintainer_email='nckbass218@gmail.com',
+    maintainer_email='nicholasbass@crop-crusaders.com',
     description='ROS2 interface for the NV08C GPS receiver',
     license='GPLv3',
     tests_require=['pytest'],

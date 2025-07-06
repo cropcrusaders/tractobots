@@ -4,7 +4,7 @@
   <version>0.0.1</version>
   <description>Launch files for bringing up Tractobots sensors and safety nodes</description>
 
-  <maintainer email="nckbass218@gmail.com">Nicholas Bass</maintainer>
+  <maintainer email="nicholasbass@crop-crusaders.com">Nicholas Bass</maintainer>
   <license>GPLv3</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

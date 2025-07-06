@@ -82,3 +82,12 @@ If you encounter connection issues:
 2. Check if ROS2 is installed: `wsl -e ls /opt/ros/jazzy`
 3. Ensure port forwarding is set up: `netsh interface portproxy show v4tov4`
 4. Start rosbridge manually: `wsl -e ros2 launch rosbridge_server rosbridge_websocket_launch.xml`
+
+## Support
+
+For technical support, bug reports, or questions about the dashboard:
+
+**Maintainer**: Nicholas Bass  
+📧 Email: [nicholasbass@crop-crusaders.com](mailto:nicholasbass@crop-crusaders.com)  
+
+Please include detailed information about your system configuration and error messages when reporting issues.

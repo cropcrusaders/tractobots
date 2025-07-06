@@ -16,7 +16,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='Nicholas Bass',
-    maintainer_email='nckbass218@gmail.com',
+    maintainer_email='nicholasbass@crop-crusaders.com',
     description='Nav2 launch files and configuration for Tractobots.',
     license='GPLv3',
 )
