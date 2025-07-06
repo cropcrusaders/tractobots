@@ -468,7 +468,8 @@ cp scripts/autostart.sh /etc/init.d/
 
 ### Getting Help
 - **📋 GitHub Issues**: Bug reports and feature requests
-- **💬 Discussions**: Community Q&A and project discussions  
+- **💬 Discussions**: Community Q&A and project discussions
+- **🌐 Discord**: [Join our community](https://discord.gg/wN2F3uFF) for real-time chat and support
 - **📧 Email Support**: nicholasbass@crop-crusaders.com (security issues)
 - **📚 Documentation**: Comprehensive guides in `/docs` directory
 
