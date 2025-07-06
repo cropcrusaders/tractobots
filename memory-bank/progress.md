@@ -1,13 +1,21 @@
-# Progress
+# Progress (Updated: 2025-07-06)
 
 ## Done
 
-- [x] Initialize project
+- Created dashboard directory structure
+- Moved main dashboard code to dashboard/dashboard.py
+- Created utility scripts for port forwarding
+- Created tests directory with integration tests
+- Created launcher scripts
+- Updated README files with documentation
+- Created cleanup utility for redundant files
 
 ## Doing
 
-- [ ] Current task
+- Finalizing organization and documentation
 
 ## Next
 
-- [ ] Upcoming task
+- Run the cleanup utility to remove redundant files
+- Test the new dashboard structure
+- Run integration tests with the new structure

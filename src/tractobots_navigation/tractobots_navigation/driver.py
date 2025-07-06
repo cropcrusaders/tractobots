@@ -50,13 +50,14 @@ class Scaler:
     """Linear mapping between two ranges."""
 
     def __init__(self, a_min, a_max, b_min, b_max):
-        a_span = a_max - a_min
-        b_span = b_max - b_min
+        self.a_min = a_min
+        self.a_span = a_max - a_min
+        self.b_min = b_min
+        self.b_span = b_max - b_min
 
-        def _scale(x):
-            return (x - a_min) / a_span * b_span + b_min
-
-        self.__call__ = _scale
+    def __call__(self, x):
+        """Scale value x from input range to output range."""
+        return (x - self.a_min) / self.a_span * self.b_span + self.b_min
 
 
 # ──────────────────────────────────────────────────────────────────────

@@ -20,8 +20,16 @@
     ],
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.stubPath": "/opt/ros/humble/lib/python3.10/site-packages",
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": false,
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none",
+        "reportMissingModuleSource": "none",
+        "reportOptionalMemberAccess": "none",
+        "reportGeneralTypeIssues": "none"
+    },
+    "python.linting.pylintArgs": [
+        "--generated-members=rclpy.*,std_msgs.*,geometry_msgs.*,sensor_msgs.*,nav_msgs.*",
+        "--disable=import-error,no-member"
+    ],
     "pylance.analysis.ignore": [
         "**/build/**",
         "**/install/**",

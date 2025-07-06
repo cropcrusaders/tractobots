@@ -139,11 +139,14 @@ def reset_emergency():
 def manual_control():
     if node:
         data = request.json
-        linear_x = data.get('linear_x', 0.0)
-        angular_z = data.get('angular_z', 0.0)
-        node.send_cmd_vel(linear_x, angular_z)
-        return jsonify({'success': True})
-    return jsonify({'success': False})
+        if data is not None:
+            linear_x = data.get('linear_x', 0.0)
+            angular_z = data.get('angular_z', 0.0)
+            node.send_cmd_vel(linear_x, angular_z)
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'No JSON data provided'})
+    return jsonify({'success': False, 'error': 'Node not available'})
 
 @app.route('/api/status')
 def get_status():
