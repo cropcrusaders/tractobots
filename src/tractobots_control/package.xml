@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tractobots_control</name>
+  <version>0.0.1</version>
+  <description>Control algorithms for TractoBots.</description>
+  <maintainer email="maintainer@example.com">TractoBots</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <export>
+  </export>
+</package>

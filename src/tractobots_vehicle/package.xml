@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tractobots_vehicle</name>
+  <version>0.0.1</version>
+  <description>Vehicle interface abstraction for CAN/J1939.</description>
+  <maintainer email="maintainer@example.com">TractoBots</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <export>
+  </export>
+</package>

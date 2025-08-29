@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tractobots_planning</name>
+  <version>0.0.1</version>
+  <description>Wrapper around Fields2Cover for generating rows and headlands.</description>
+  <maintainer email="maintainer@example.com">TractoBots</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>nav_msgs</depend>
+  <export>
+  </export>
+</package>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tractobots_bridges</name>
+  <version>0.0.1</version>
+  <description>Bridges to external systems such as AgOpenGPS and NMEA GPS.</description>
+  <maintainer email="maintainer@example.com">TractoBots</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <export>
+  </export>
+</package>

@@ -1,0 +1,5 @@
+# Example udev rules for TractoBots devices
+# GNSS receiver
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", SYMLINK+="gnss0"
+# CAN adapter
+SUBSYSTEM=="net", ATTRS{address}=="00:11:22:33:44:55", NAME="can0"
