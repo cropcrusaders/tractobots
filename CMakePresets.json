@@ -1,0 +1,17 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {"major": 3, "minor": 22, "patch": 1},
+  "configurePresets": [
+    {
+      "name": "debug",
+      "hidden": false,
+      "generator": "Unix Makefiles",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "Debug"}
+    },
+    {
+      "name": "relwithdebinfo",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {"CMAKE_BUILD_TYPE": "RelWithDebInfo"}
+    }
+  ]
+}

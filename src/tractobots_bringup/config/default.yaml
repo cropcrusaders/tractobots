@@ -1,0 +1,13 @@
+controller:
+  type: stanley
+  lookahead_m: 2.0
+  kp: 1.0
+  ki: 0.0
+  kd: 0.1
+agopengps:
+  udp_host: 127.0.0.1
+  udp_port: 8888
+nmea:
+  transport: udp
+  device: /dev/ttyUSB0
+  baud: 9600

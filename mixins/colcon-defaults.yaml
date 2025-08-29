@@ -1,0 +1,7 @@
+build:
+  cmake-args:
+    - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  merge-install: true
+test:
+  ctest-args:
+    - --output-on-failure
