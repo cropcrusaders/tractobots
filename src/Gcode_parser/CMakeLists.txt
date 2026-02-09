@@ -8,7 +8,9 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(nav2_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
 add_executable(gcode_reader_node
@@ -25,7 +27,9 @@ target_include_directories(gcode_reader_node PUBLIC
 
 ament_target_dependencies(gcode_reader_node
   rclcpp
+  rclcpp_action
   nav_msgs
+  nav2_msgs
   geometry_msgs
   std_msgs
 )
