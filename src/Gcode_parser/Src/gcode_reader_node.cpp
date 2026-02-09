@@ -17,19 +17,20 @@ GCodeReaderNode::GCodeReaderNode()
 
     path_pub_ = create_publisher<nav_msgs::msg::Path>("gcode_path", 10);
     hitch_pub_ = create_publisher<UInt8>("/hitch/put", 10);
+    nav_client_ = rclcpp_action::create_client<NavigateToPose>(this, "navigate_to_pose");
 
     loadGCodeAndPublish();
 }
 
 void GCodeReaderNode::loadGCodeAndPublish() {
     GCodeParser parser;
-    auto commands = parser.parseFile(gcode_file_path_);
+    commands_ = parser.parseFile(gcode_file_path_);
 
     nav_msgs::msg::Path path_msg;
     path_msg.header.stamp = this->get_clock()->now();
     path_msg.header.frame_id = "map";
 
-    for (const auto& cmd : commands) {
+    for (const auto& cmd : commands_) {
         geometry_msgs::msg::PoseStamped pose;
         pose.header = path_msg.header;
         auto enu = coordinate_conversion::latLonToLocal(
@@ -44,42 +45,94 @@ void GCodeReaderNode::loadGCodeAndPublish() {
     RCLCPP_INFO(this->get_logger(), "Publishing G-code path with %zu waypoints", path_msg.poses.size());
     path_pub_->publish(path_msg);
 
-    executeCommands(commands);
+    // Defer command execution until the node is spinning and Nav2 is available
+    command_index_ = 0;
+    startup_timer_ = create_wall_timer(
+        std::chrono::seconds(1),
+        [this]() {
+            if (!nav_client_->action_server_is_ready()) {
+                RCLCPP_INFO(this->get_logger(), "Waiting for Nav2 action server...");
+                return;
+            }
+            startup_timer_->cancel();
+            RCLCPP_INFO(this->get_logger(), "Nav2 action server available, executing %zu commands",
+                commands_.size());
+            executeNextCommand();
+        });
 }
 
-void GCodeReaderNode::executeCommands(const std::vector<GCodeCommand>& cmds)
+void GCodeReaderNode::executeNextCommand()
 {
-    for (const auto& cmd : cmds) {
-        switch (cmd.type) {
-            case GCodeCommand::Move:
-                moveTo(cmd);
-                break;
-            case GCodeCommand::DropPlow:
-                dropPlow();
-                break;
-            case GCodeCommand::LiftPlow:
-                liftPlow();
-                break;
-        }
+    if (command_index_ >= commands_.size()) {
+        RCLCPP_INFO(this->get_logger(), "All G-code commands executed");
+        return;
     }
+
+    const auto& cmd = commands_[command_index_];
+    switch (cmd.type) {
+        case GCodeCommand::Move:
+            moveTo(cmd);
+            // moveTo advances command_index_ and calls executeNextCommand via result callback
+            return;
+        case GCodeCommand::DropPlow:
+            dropPlow();
+            break;
+        case GCodeCommand::LiftPlow:
+            liftPlow();
+            break;
+    }
+    command_index_++;
+    executeNextCommand();
 }
 
 void GCodeReaderNode::moveTo(const GCodeCommand& cmd)
 {
-    // Convert to local ENU for future nav2 integration
     auto enu = coordinate_conversion::latLonToLocal(
         cmd.latitude, cmd.longitude, origin_lat_, origin_lon_);
 
-    geometry_msgs::msg::PoseStamped goal;
-    goal.header.stamp = now();
-    goal.header.frame_id = "map";
-    goal.pose.position.x = enu.east;
-    goal.pose.position.y = enu.north;
-    goal.pose.position.z = cmd.altitude;
-    goal.pose.orientation.w = 1.0;
+    auto goal_msg = NavigateToPose::Goal();
+    goal_msg.pose.header.stamp = now();
+    goal_msg.pose.header.frame_id = "map";
+    goal_msg.pose.pose.position.x = enu.east;
+    goal_msg.pose.pose.position.y = enu.north;
+    goal_msg.pose.pose.position.z = cmd.altitude;
+    goal_msg.pose.pose.orientation.w = 1.0;
 
-    // TODO: send NavigateToPose action to Nav2
-    (void)goal; // suppress unused warning
+    RCLCPP_INFO(this->get_logger(), "Sending NavigateToPose goal [%zu/%zu]: x=%.2f, y=%.2f",
+        command_index_ + 1, commands_.size(), enu.east, enu.north);
+
+    auto send_goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
+
+    send_goal_options.goal_response_callback =
+        [this](const GoalHandleNavigate::SharedPtr & goal_handle) {
+            if (!goal_handle) {
+                RCLCPP_ERROR(this->get_logger(), "NavigateToPose goal was rejected");
+                command_index_++;
+                executeNextCommand();
+            }
+        };
+
+    send_goal_options.result_callback =
+        [this](const GoalHandleNavigate::WrappedResult & result) {
+            switch (result.code) {
+                case rclcpp_action::ResultCode::SUCCEEDED:
+                    RCLCPP_INFO(this->get_logger(), "NavigateToPose goal succeeded");
+                    break;
+                case rclcpp_action::ResultCode::ABORTED:
+                    RCLCPP_ERROR(this->get_logger(), "NavigateToPose goal aborted");
+                    break;
+                case rclcpp_action::ResultCode::CANCELED:
+                    RCLCPP_WARN(this->get_logger(), "NavigateToPose goal canceled");
+                    break;
+                default:
+                    RCLCPP_ERROR(this->get_logger(), "NavigateToPose unknown result code");
+                    break;
+            }
+            command_index_++;
+            executeNextCommand();
+        };
+
+    nav_client_->async_send_goal(goal_msg, send_goal_options);
 }
 
 void GCodeReaderNode::liftPlow()
