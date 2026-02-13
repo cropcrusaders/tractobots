@@ -75,6 +75,15 @@ class WebDashboardNode(Node):
         self.data['status'] = 'READY'
         self.socketio.emit('status_update', self.data)
 
+    def pause_mission(self):
+        self.mission_pub.publish(Bool(data=False))
+        # Send zero velocity to halt the robot
+        twist = Twist()
+        self.cmd_vel_pub.publish(twist)
+        self.data['mission_active'] = False
+        self.data['status'] = 'PAUSED'
+        self.socketio.emit('status_update', self.data)
+
     def trigger_estop(self):
         self.emergency_pub.publish(Bool(data=True))
         self.data['emergency_stop'] = True
@@ -120,6 +129,13 @@ def stop_mission():
         node.stop_mission()
         return jsonify({'success': True, 'message': 'Mission stopped'})
     return jsonify({'success': False, 'message': 'Error stopping mission'})
+
+@app.route('/api/mission/pause', methods=['POST'])
+def pause_mission():
+    if node:
+        node.pause_mission()
+        return jsonify({'success': True, 'message': 'Mission paused'})
+    return jsonify({'success': False, 'message': 'Error pausing mission'})
 
 @app.route('/api/emergency/trigger', methods=['POST'])
 def trigger_emergency():

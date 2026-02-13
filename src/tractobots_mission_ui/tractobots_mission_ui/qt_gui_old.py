@@ -377,8 +377,14 @@ class TractorGUI(QMainWindow):
         self.mission_start_time = None
 
     def pause_mission(self):
-        # Implement pause logic
-        pass
+        """Pause current mission - stops motion but preserves mission state"""
+        self.node.mission_pub.publish(Bool(data=False))
+        # Send zero velocity to halt the robot
+        twist = Twist()
+        self.node.cmd_vel_pub.publish(twist)
+        self.node.mission_active = False
+        # Preserve mission_start_time so the timer can resume
+        self.status_label.setText('🟠 MISSION PAUSED')
 
     def trigger_estop(self):
         self.node.emergency_pub.publish(Bool(data=True))

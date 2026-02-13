@@ -377,8 +377,11 @@ if QT_AVAILABLE:
             self.status_label.setText('🟡 MISSION STOPPED')
 
         def pause_mission(self):
-            """Pause current mission"""
-            # Implement pause logic
+            """Pause current mission - stops motion but preserves mission state"""
+            self.ros_node.publish_mission_stop()
+            # Send zero velocity to halt the robot
+            twist = Twist()
+            self.ros_node.cmd_vel_pub.publish(twist)
             self.status_label.setText('🟠 MISSION PAUSED')
 
         def emergency_stop(self):
