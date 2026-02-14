@@ -4,6 +4,9 @@
 *.autosave
 *.workspace
 *.user
+# Python bytecode:
+__pycache__/
+*.pyc
 # Ignore these Paths:
 .catkin_tools
 devel
